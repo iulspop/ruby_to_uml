@@ -25,7 +25,22 @@ class TestUMLInfoGenerator < Minitest::Test
       public empty?()
     MSG
     expected_methods = [stack, linked_list, empty_linked_list]
-    actual_methods = @uml_info.classes.map { |class_info| class_info.instance_methods.map(&:to_s).join("\n") }
+    actual_methods = @uml_info.classes.map { |class_info| class_info.instance_methods_info.map(&:to_s).join("\n") }
+    assert_equal(expected_methods, actual_methods)
+  end
+
+  def test_classes_contain_singleton_methods
+    stack = ""
+    linked_list = <<~MSG.chomp
+      self.make(args)
+      self.cons(head, tail)
+      self.empty()
+    MSG
+    empty_linked_list = <<~MSG.chomp
+      self.cons(head, tail)
+    MSG
+    expected_methods = [stack, linked_list, empty_linked_list]
+    actual_methods = @uml_info.classes.map { |class_info| class_info.singleton_methods_info.map(&:to_s).join("\n") }
     assert_equal(expected_methods, actual_methods)
   end
 

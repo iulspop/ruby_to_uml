@@ -1,5 +1,5 @@
 module UMLInfoGenerator
-  ClassInfo = Struct.new(:name, :instance_methods)
+  ClassInfo = Struct.new(:name, :instance_methods_info, :singleton_methods_info)
 
   RelationshipInfo = Struct.new(:subject, :object, :verb) do
     def to_s
@@ -10,6 +10,12 @@ module UMLInfoGenerator
   InstanceMethodInfo = Struct.new(:name, :type, :parameters) do
     def to_s
       "#{type} #{name}(#{parameters.join(', ')})"
+    end
+  end
+
+  SingletonMethodInfo = Struct.new(:name, :parameters) do
+    def to_s
+      "self.#{name}(#{parameters.join(', ')})"
     end
   end
 

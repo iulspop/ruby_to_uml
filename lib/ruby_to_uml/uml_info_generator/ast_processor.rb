@@ -19,8 +19,9 @@ module UMLInfoGenerator
       add_inheritence_relationship_if_exists(class_name, node)
       add_module_relationships_if_exist(child_node, class_name)
 
-      instance_methods = get_instance_methods(child_node)
-      add_class(class_name, instance_methods)
+      instance_methods_info = get_instance_methods(child_node)
+      singleton_methods_info = get_singleton_methods(child_node)
+      add_class(class_name, instance_methods_info, singleton_methods_info)
 
       node.updated(nil, process_all(node))
     end
@@ -78,11 +79,11 @@ module UMLInfoGenerator
     def get_instance_methods(node)
       if node.type == :begin
         type = :public
-        node.children.each_with_object([]) do |node, instance_methods|
+        node.children.each_with_object([]) do |node, instance_methods_info|
           if node.type == :def
             name = node.children[0]
             args = get_arguments(node.children[1])
-            instance_methods << InstanceMethodInfo.new(name, type, args)
+            instance_methods_info << InstanceMethodInfo.new(name, type, args)
           elsif node.type == :send
             caller, method, arguments = *node
             case method
@@ -107,8 +108,28 @@ module UMLInfoGenerator
       node.children.each_with_object([]) { |node, args| args << node.children[0] }
     end
 
-    def add_class(name, instance_methods)
-      classes << ClassInfo.new(name.to_s, instance_methods)
+    def get_singleton_methods(node)
+      if node.type == :begin
+        node.children.each_with_object([]) do |node, singleton_methods_info|
+          if node.type == :defs
+            name = node.children[1]
+            args = get_arguments(node.children[2])
+            singleton_methods_info << SingletonMethodInfo.new(name, args)
+          end
+        end
+      else
+        if node.type == :defs
+          name = node.children[1]
+          args = get_arguments(node.children[2])
+          return [SingletonMethodInfo.new(name, args)]
+        else
+          []
+        end
+      end
+    end
+
+    def add_class(name, instance_methods_info, singleton_methods_info)
+      classes << ClassInfo.new(name.to_s, instance_methods_info, singleton_methods_info)
     end
   end
 end
