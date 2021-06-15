@@ -10,17 +10,20 @@ module UMLInfoGenerator
     def on_class(node)
       # Class definition form:
       # first child is class name constant,
-      # second child is superclass name constant or nil,
-      # third child is everything else
-      # (either begin type when multiple nodes, or a single node)
+      # second child is superclass constant or nil,
+      # third child is the class body
+      # body is either begin type with children nodes, or a single node of any type
       class_name = get_class_name(node)
-      child_node = node.children[2]
+
+      body_node_index = 2
+      class_body_node = node.children[body_node_index]
 
       add_inheritence_relationship_if_exists(class_name, node)
-      add_module_relationships_if_exist(child_node, class_name)
+      add_module_relationships_if_exist(class_body_node, class_name)
 
-      instance_methods_info = get_instance_methods(child_node)
-      singleton_methods_info = get_singleton_methods(child_node)
+      instance_methods_info = get_instance_methods(class_body_node)
+      singleton_methods_info = get_singleton_methods(class_body_node)
+
       add_class(class_name, instance_methods_info, singleton_methods_info)
 
       node.updated(nil, process_all(node))
@@ -30,13 +33,19 @@ module UMLInfoGenerator
 
     def get_class_name(node)
       constant, inherit, children = *node
-      # Unscoped Constant form: (const nil :ConstantName)
-      # nil represents no scope, could be scoped to another constant
       get_constant_name(constant)
     end
 
     def get_constant_name(constant)
-      constant.children[1]
+      # Unscoped Constant form: (const nil :ConstantName)
+      # nil represents no scope, could be scoped to another constant
+      constant_name_index = 1
+      constant.children[constant_name_index]
+    end
+
+    def get_superclass_name(node)
+      constant, inherit, children = *node
+      inherit ? get_constant_name(inherit) : nil
     end
 
     def add_inheritence_relationship_if_exists(name, node)
@@ -44,11 +53,6 @@ module UMLInfoGenerator
       if superclass
         relationships << RelationshipInfo.new(name, superclass, :inherits)
       end
-    end
-
-    def get_superclass_name(node)
-      constant, inherit, children = *node
-      inherit ? get_constant_name(inherit) : nil
     end
 
     def operate(node, &operation)
@@ -59,7 +63,7 @@ module UMLInfoGenerator
       end
     end
 
-    def add_module_relationships_if_exist(child_node, class_name)
+    def add_module_relationships_if_exist(node, class_name)
       operation = lambda do |node|
         return if node.type != :send
         caller, method, arguments = *node
@@ -68,7 +72,7 @@ module UMLInfoGenerator
         when :extend  then add_module_relationship(class_name, arguments, :extends)
         when :prepend then add_module_relationship(class_name, arguments, :prepends) end
       end
-      operate(child_node, &operation)
+      operate(node, &operation)
     end
 
     def add_module_relationship(class_name, arguments, type)
