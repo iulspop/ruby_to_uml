@@ -15,9 +15,9 @@ module UMLInfoGenerator
       # body is either begin type with children nodes, or a single node of any type
       class_name      = get_class_name(node)
       class_body_node = get_class_body(node)
+      superclass_name = get_superclass_name(node)
 
-
-      add_inheritence_relationship_if_exists(class_name, node)
+      add_inheritence_relationship(class_name, superclass_name) if superclass_name
       add_module_relationships_if_exist(class_body_node, class_name)
 
       instance_methods_info = get_instance_methods(class_body_node)
@@ -40,6 +40,11 @@ module UMLInfoGenerator
       node.children[body_node_index]
     end
 
+    def get_superclass_name(node)
+      constant, inherit, children = *node
+      inherit ? get_constant_name(inherit) : nil
+    end
+
     def get_constant_name(constant)
       # Unscoped Constant form: (const nil :ConstantName)
       # nil represents no scope, could be scoped to another constant
@@ -47,16 +52,8 @@ module UMLInfoGenerator
       constant.children[constant_name_index]
     end
 
-    def get_superclass_name(node)
-      constant, inherit, children = *node
-      inherit ? get_constant_name(inherit) : nil
-    end
-
-    def add_inheritence_relationship_if_exists(name, node)
-      superclass = get_superclass_name(node)
-      if superclass
-        relationships << RelationshipInfo.new(name, superclass, :inherits)
-      end
+    def add_inheritence_relationship(class_name, superclass_name)
+      relationships << RelationshipInfo.new(class_name, superclass_name, :inherits)
     end
 
     def operate(node, &operation)
