@@ -24,17 +24,22 @@ module ParseToUMLInfo
     end
 
     def on_class(node)
-      add_class(node)
+      name = get_class_name(node)
+      add_class(name)
       node.updated(nil, process_all(node))
     end
 
     private
 
-    def add_class(node)
+    def get_class_name(node)
       constant, inherit, children = *node
-      name = constant.children[1]
-      class_info = ClassInfo.new(name)
-      @classes << class_info
+      # Unscoped Constant form: (const nil :ConstantName)
+      # nil represents no scope, could be scoped to another constant
+      constant.children[1]
+    end
+
+    def add_class(name)
+      classes << ClassInfo.new(name)
     end
   end
 
