@@ -6,8 +6,13 @@ class TestParseToUMLInfo < Minitest::Test
     @uml_info = ParseToUMLInfo.process(files)
   end
 
-  def test_returns_list_of_every_class_name_in_file
+  def test_classes_returns_name_of_every_class_in_files
     classes = %w[LinkedList EmptyLinkedList]
-    assert_equal(classes, @uml_info.class_names)
+    assert_equal(classes, @uml_info.classes)
+  end
+
+  def test_relationships_returns_inheritence_relationships
+    relationships = ["EmptyLinkedList inherits LinkedList"]
+    assert_equal(relationships, @uml_info.relationships)
   end
 end
