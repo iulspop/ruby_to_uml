@@ -4,8 +4,8 @@ class TestParseToUMLInfo < Minitest::Test
   def test_returns_list_of_every_class_name_in_file
     files = %w[test/fixtures/linked_list.rb]
 
-    classes = ParseToUMLInfo.process(files)
+    uml_info = ParseToUMLInfo.process(files)
 
-    assert_equal(%i[LinkedList EmptyLinkedList], classes)
+    assert_equal(%i[LinkedList EmptyLinkedList], uml_info.class_names)
   end
 end

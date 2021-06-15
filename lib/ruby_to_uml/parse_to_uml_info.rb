@@ -12,7 +12,7 @@ module ParseToUMLInfo
   def self.parse_ast_to_uml_info(top_level_node)
     processor = ASTProcessor.new
     processor.process(top_level_node)
-    processor.classes
+    UMLInfo.new(processor.classes)
   end
   private_class_method :parse_ast_to_uml_info
 
@@ -33,7 +33,31 @@ module ParseToUMLInfo
     def add_class(node)
       constant, inherit, children = *node
       name = constant.children[1]
-      @classes << name
+      class_info = ClassInfo.new(name)
+      @classes << class_info
     end
+  end
+
+  class ClassInfo
+    attr_reader :name
+    def initialize(name)
+      @name = name
+    end
+  end
+
+  class UMLInfo
+    def initialize(classes, modules = [], relationships = [])
+      @classes = classes
+      @modules = modules
+      @relationships = relationships
+    end
+
+    def class_names
+      classes.map(&:name)
+    end
+
+    private
+
+    attr_reader :classes
   end
 end
