@@ -1,13 +1,13 @@
 module ParseToUMLInfo
   def self.process(files)
-    top_level_node = parse_files_to_ast(files)
+    top_level_node = parse_file_to_ast(files[0])
     parse_ast_to_uml_info(top_level_node)
   end
 
-  def self.parse_files_to_ast(files)
-    Parser::CurrentRuby.parse_file(files[0])
+  def self.parse_file_to_ast(file)
+    Parser::CurrentRuby.parse_file(file)
   end
-  private_class_method :parse_files_to_ast
+  private_class_method :parse_file_to_ast
 
   def self.parse_ast_to_uml_info(top_level_node)
     processor = ASTProcessor.new
