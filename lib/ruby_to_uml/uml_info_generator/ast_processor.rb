@@ -18,7 +18,9 @@ module UMLInfoGenerator
 
       add_inheritence_relationship_if_exists(class_name, node)
       add_module_relationships_if_exist(child_node, class_name)
-      add_class(class_name)
+
+      instance_methods = get_instance_methods(child_node)
+      add_class(class_name, instance_methods)
 
       node.updated(nil, process_all(node))
     end
@@ -73,8 +75,40 @@ module UMLInfoGenerator
       relationships << RelationshipInfo.new(class_name, module_name, type)
     end
 
-    def add_class(name)
-      classes << ClassInfo.new(name.to_s)
+    def get_instance_methods(node)
+      if node.type == :begin
+        type = :public
+        node.children.each_with_object([]) do |node, instance_methods|
+          if node.type == :def
+            name = node.children[0]
+            args = get_arguments(node.children[1])
+            instance_methods << InstanceMethodInfo.new(name, type, args)
+          elsif node.type == :send
+            caller, method, arguments = *node
+            case method
+            when :public    then type = :public
+            when :private   then type = :private
+            when :protected then type = :protected end
+          end
+        end
+      else
+        if node.type == :def
+          name = node.children[0]
+          args = get_arguments(node.children[1])
+          return [InstanceMethodInfo.new(name, :public, args)]
+        else
+          []
+        end
+      end
+    end
+
+    def get_arguments(node)
+      return [] if node.children.nil?
+      node.children.each_with_object([]) { |node, args| args << node.children[0] }
+    end
+
+    def add_class(name, instance_methods)
+      classes << ClassInfo.new(name.to_s, instance_methods)
     end
   end
 end

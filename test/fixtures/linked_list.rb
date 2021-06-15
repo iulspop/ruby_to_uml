@@ -9,7 +9,7 @@ module Rake
 
     attr_reader :head, :tail
 
-    def conj(item)
+    def conj(*item)
       self.class.cons(item, self)
     end
 
@@ -25,25 +25,6 @@ module Rake
         other = other.tail
       end
       current.empty? && other.empty?
-    end
-
-    def to_s
-      items = map(&:to_s).join(", ")
-      "LL(#{items})"
-    end
-
-    def inspect
-      items = map(&:inspect).join(", ")
-      "LL(#{items})"
-    end
-
-    def each
-      current = self
-      while !current.empty?
-        yield(current.head)
-        current = current.tail
-      end
-      self
     end
 
     def self.make(*args)
@@ -65,9 +46,15 @@ module Rake
 
     protected
 
-    def initialize(head, tail=EMPTY)
+    def initialize(head, tail=EMPTY, dragon: "yellow", &wisdom)
       @head = head
       @tail = tail
+    end
+
+    private
+
+    def traverse(index)
+
     end
 
     class EmptyLinkedList < LinkedList
