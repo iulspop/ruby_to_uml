@@ -13,10 +13,9 @@ module UMLInfoGenerator
       # second child is superclass constant or nil,
       # third child is the class body
       # body is either begin type with children nodes, or a single node of any type
-      class_name = get_class_name(node)
+      class_name      = get_class_name(node)
+      class_body_node = get_class_body(node)
 
-      body_node_index = 2
-      class_body_node = node.children[body_node_index]
 
       add_inheritence_relationship_if_exists(class_name, node)
       add_module_relationships_if_exist(class_body_node, class_name)
@@ -34,6 +33,11 @@ module UMLInfoGenerator
     def get_class_name(node)
       constant, inherit, children = *node
       get_constant_name(constant)
+    end
+
+    def get_class_body(node)
+      body_node_index = 2
+      node.children[body_node_index]
     end
 
     def get_constant_name(constant)
