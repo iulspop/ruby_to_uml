@@ -1,2 +1,2 @@
 require 'parser/current'
-require_relative 'ruby_to_uml/parse_to_uml_info.rb'
+require_relative 'ruby_to_uml/uml_info_generator/uml_info_generator.rb'
