@@ -39,7 +39,7 @@ module ParseToUMLInfo
     end
 
     def add_class(name)
-      classes << ClassInfo.new(name)
+      classes << ClassInfo.new(name.to_s)
     end
   end
 
