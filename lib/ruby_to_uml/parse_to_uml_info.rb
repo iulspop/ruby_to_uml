@@ -34,7 +34,7 @@ module ParseToUMLInfo
       child_node = node.children[2]
 
       add_inheritence_relationship_if_exists(class_name, node)
-      add_module_relationships_if_exists(child_node, class_name)
+      add_module_relationships_if_exist(child_node, class_name)
       add_class(class_name)
 
       node.updated(nil, process_all(node))
@@ -73,7 +73,7 @@ module ParseToUMLInfo
       end
     end
 
-    def add_module_relationships_if_exists(child_node, class_name)
+    def add_module_relationships_if_exist(child_node, class_name)
       operation = lambda do |node|
         return if node.type != :send
         caller, method, arguments = *node
