@@ -31,44 +31,10 @@ module ParseToUMLInfo
       # third child is everything else
       # (either begin type when multiple nodes, or a single node)
       class_name = get_class_name(node)
-      add_inheritence_relationship_if_exists(class_name, node)
-
       child_node = node.children[2]
 
-      if child_node.type == :begin
-        child_node.children.each do |child_node|
-          if child_node.type == :send
-            caller, method, arguments = *child_node
-            case method
-            when :include
-              module_name = get_constant_name(arguments)
-              relationships << RelationshipInfo.new(class_name, module_name, :includes)
-            when :extend
-              module_name = get_constant_name(arguments)
-              relationships << RelationshipInfo.new(class_name, module_name, :extends)
-            when :prepend
-              module_name = get_constant_name(arguments)
-              relationships << RelationshipInfo.new(class_name, module_name, :prepends)
-            end
-          end
-        end
-      else
-        if child_node.type == :send
-          caller, method, arguments = *child_node
-          case method
-          when :include
-            module_name = get_constant_name(arguments)
-            relationships << RelationshipInfo.new(class_name, module_name, :includes)
-          when :extend
-            module_name = get_constant_name(arguments)
-            relationships << RelationshipInfo.new(class_name, module_name, :extends)
-          when :prepend
-            module_name = get_constant_name(arguments)
-            relationships << RelationshipInfo.new(class_name, module_name, :prepends)
-          end
-        end
-      end
-
+      add_inheritence_relationship_if_exists(class_name, node)
+      add_module_relationships_if_exists(child_node, class_name)
       add_class(class_name)
 
       node.updated(nil, process_all(node))
@@ -97,6 +63,31 @@ module ParseToUMLInfo
     def get_superclass_name(node)
       constant, inherit, children = *node
       inherit ? get_constant_name(inherit) : nil
+    end
+
+    def operate(node, &operation)
+      if node.type == :begin
+        node.children.each { |node| operation.call(node) }
+      else
+        operation.call(node)
+      end
+    end
+
+    def add_module_relationships_if_exists(child_node, class_name)
+      operation = lambda do |node|
+        return if node.type != :send
+        caller, method, arguments = *node
+        case method
+        when :include then add_module_relationship(class_name, arguments, :includes)
+        when :extend  then add_module_relationship(class_name, arguments, :extends)
+        when :prepend then add_module_relationship(class_name, arguments, :prepends) end
+      end
+      operate(child_node, &operation)
+    end
+
+    def add_module_relationship(class_name, arguments, type)
+      module_name = get_constant_name(arguments)
+      relationships << RelationshipInfo.new(class_name, module_name, type)
     end
 
     def add_class(name)
