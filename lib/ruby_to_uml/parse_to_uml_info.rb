@@ -25,10 +25,51 @@ module ParseToUMLInfo
     end
 
     def on_class(node)
-      name = get_class_name(node)
-      add_inheritence_relationship_if_exists(name, node)
+      # Class definition form:
+      # first child is class name constant,
+      # second child is superclass name constant or nil,
+      # third child is everything else
+      # (either begin type when multiple nodes, or a single node)
+      class_name = get_class_name(node)
+      add_inheritence_relationship_if_exists(class_name, node)
 
-      add_class(name)
+      child_node = node.children[2]
+
+      if child_node.type == :begin
+        child_node.children.each do |child_node|
+          if child_node.type == :send
+            caller, method, arguments = *child_node
+            case method
+            when :include
+              module_name = get_constant_name(arguments)
+              relationships << RelationshipInfo.new(class_name, module_name, :includes)
+            when :extend
+              module_name = get_constant_name(arguments)
+              relationships << RelationshipInfo.new(class_name, module_name, :extends)
+            when :prepend
+              module_name = get_constant_name(arguments)
+              relationships << RelationshipInfo.new(class_name, module_name, :prepends)
+            end
+          end
+        end
+      else
+        if child_node.type == :send
+          caller, method, arguments = *child_node
+          case method
+          when :include
+            module_name = get_constant_name(arguments)
+            relationships << RelationshipInfo.new(class_name, module_name, :includes)
+          when :extend
+            module_name = get_constant_name(arguments)
+            relationships << RelationshipInfo.new(class_name, module_name, :extends)
+          when :prepend
+            module_name = get_constant_name(arguments)
+            relationships << RelationshipInfo.new(class_name, module_name, :prepends)
+          end
+        end
+      end
+
+      add_class(class_name)
 
       node.updated(nil, process_all(node))
     end

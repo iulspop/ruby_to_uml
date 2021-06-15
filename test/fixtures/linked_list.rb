@@ -1,5 +1,12 @@
 module Rake
+  class Stack
+    prepend Extras
+  end
+
   class LinkedList
+    include Enumerable
+    extend Utils
+
     attr_reader :head, :tail
 
     def conj(item)
