@@ -24,9 +24,12 @@ module UMLInfoGenerator
     end
 
     def on_module(node)
-      module_name = get_module_name(node)
+      module_name            = get_module_name(node)
+      module_body_node       = BodyNodeWrapper.new(get_module_body(node))
+      instance_methods_info  = module_body_node.array_operation(&get_instance_methods_closure)
+      singleton_methods_info = module_body_node.array_operation(&get_singleton_methods_closure)
 
-      add_module(module_name)
+      add_module(module_name, instance_methods_info, singleton_methods_info)
 
       node.updated(nil, process_all(node))
     end
@@ -113,8 +116,8 @@ module UMLInfoGenerator
       classes << ClassInfo.new(name, instance_methods_info, singleton_methods_info, instance_variables_info)
     end
 
-    def add_module(name)
-      @modules << ModuleInfo.new(name)
+    def add_module(name, instance_methods_info, singleton_methods_info)
+      modules << ModuleInfo.new(name, instance_methods_info, singleton_methods_info)
     end
 
     def get_constant_name(const_node)
@@ -169,6 +172,11 @@ module UMLInfoGenerator
     def get_module_name(node)
       constant, _ = *node
       get_constant_name(constant)
+    end
+
+    def get_module_body(node)
+      _, body = *node
+      body
     end
   end
 

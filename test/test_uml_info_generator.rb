@@ -48,7 +48,7 @@ describe UMLInfoGenerator do
         private traverse(index)
       MSG
       expected = [instance_methods]
-      _(uml_info.instance_methods).must_equal(expected)
+      _(uml_info.class_instance_methods).must_equal(expected)
     end
 
     it "returns singleton methods with arguments and without type" do
@@ -74,7 +74,7 @@ describe UMLInfoGenerator do
         self.traverse(index)
       MSG
       expected = [singleton_methods]
-      _(uml_info.singleton_methods).must_equal(expected)
+      _(uml_info.class_singleton_methods).must_equal(expected)
     end
 
     it "returns instance methods even when class body has a single node" do
@@ -92,7 +92,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = ["public yellow(iron)"]
-      _(uml_info.instance_methods).must_equal(expected)
+      _(uml_info.class_instance_methods).must_equal(expected)
     end
 
     it "returns singleton methods even when class body has a single node" do
@@ -110,7 +110,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = ["self.yellow(iron)"]
-      _(uml_info.singleton_methods).must_equal(expected)
+      _(uml_info.class_singleton_methods).must_equal(expected)
     end
 
     it "returns instance variables defined in the initialize method body" do
@@ -174,6 +174,87 @@ describe UMLInfoGenerator do
       # Assert
       expected = %i[Enumerable Rake TaskRunner]
       _(uml_info.module_names).must_equal(expected)
+    end
+
+    it "returns instance methods with correct type and arguments" do
+      # Setup
+      input = <<~MSG.chomp
+        module Rake
+          def run(task_id); end
+          protected
+          def on?; end
+          private
+          def show_task_output(task_id: nil, terminal_id: nil); end
+        end
+      MSG
+  
+      # Execute
+      uml_info = UMLInfoGenerator.process_code(input)
+  
+      # Assert
+      instance_methods = <<~MSG.chomp
+        public run(task_id)
+        protected on?()
+        private show_task_output(task_id, terminal_id)
+      MSG
+      expected = [instance_methods]
+      _(uml_info.module_instance_methods).must_equal(expected)
+    end
+
+    it "returns singleton methods with arguments and without type" do
+      # Setup
+      input = <<~MSG.chomp
+        module Math
+          def self.sqrt(number); end
+          def self.pi; end
+          private
+          def self.to_fixed_point; end
+        end
+      MSG
+  
+      # Execute
+      uml_info = UMLInfoGenerator.process_code(input)
+  
+      # Assert
+      singleton_methods = <<~MSG.chomp
+        self.sqrt(number)
+        self.pi()
+        self.to_fixed_point()
+      MSG
+      expected = [singleton_methods]
+      _(uml_info.module_singleton_methods).must_equal(expected)
+    end
+
+    it "returns instance methods even when class body has a single node" do
+      # Setup
+      input = <<~MSG.chomp
+        module Rake
+          def run(task_id); end
+        end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_code(input)
+
+      # Assert
+      expected = ["public run(task_id)"]
+      _(uml_info.module_instance_methods).must_equal(expected)
+    end
+
+    it "returns singleton methods even when class body has a single node" do
+      # Setup
+      input = <<~MSG.chomp
+        module Math
+          def self.sqrt(number); end
+        end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_code(input)
+
+      # Assert
+      expected = ["self.sqrt(number)"]
+      _(uml_info.module_singleton_methods).must_equal(expected)
     end
   end
 

@@ -7,7 +7,9 @@ module UMLInfoGenerator
   )
 
   ModuleInfo = Struct.new(
-    :name
+    :name,
+    :instance_methods_info,
+    :singleton_methods_info,
   )
 
   RelationshipInfo = Struct.new(:subject, :object, :verb) do
@@ -43,12 +45,20 @@ module UMLInfoGenerator
       modules.map(&:name)
     end
 
-    def instance_methods
+    def class_instance_methods
       classes.map { |class_info| class_info.instance_methods_info.map(&:to_s).join("\n") }
     end
 
-    def singleton_methods
+    def module_instance_methods
+      modules.map { |class_info| class_info.instance_methods_info.map(&:to_s).join("\n") }
+    end
+
+    def class_singleton_methods
       classes.map { |class_info| class_info.singleton_methods_info.map(&:to_s).join("\n") }
+    end
+
+    def module_singleton_methods
+      modules.map { |class_info| class_info.singleton_methods_info.map(&:to_s).join("\n") }
     end
 
     def instance_variables
