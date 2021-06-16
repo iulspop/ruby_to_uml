@@ -16,8 +16,11 @@ module UMLInfoGenerator
       class_name             = get_class_name(node)
       superclass_name        = get_superclass_name(node)
       class_body_node        = get_class_body(node)
-      instance_methods_info  = get_instance_methods(class_body_node)
+
+      wrapped_body_node = BodyNodeWrapper.new(class_body_node)
+      instance_methods_info = wrapped_body_node.array_operation(&get_instance_methods_closure)
       singleton_methods_info = get_singleton_methods(class_body_node)
+
 
       add_inheritence_relationship(class_name, superclass_name) if superclass_name
       add_module_relationships_if_exist(class_body_node, class_name)
@@ -72,35 +75,18 @@ module UMLInfoGenerator
       relationships << RelationshipInfo.new(class_name, module_name, type)
     end
 
-    def get_instance_methods(node)
-      if node.type == :begin
-        instance_methods_info = []
-        type = :public
-        node.children.each do |node|
-          if node.type == :def
-            method_name = get_method_name(node)
-            args        = get_instance_method_args(node)
-            instance_methods_info << InstanceMethodInfo.new(method_name, type, args)
-          elsif node.type == :send
-            method_name = get_send_method(node)
-            new_type    = get_method_type_change(method_name)
-            type = new_type if new_type
-          end
-        end
-        return instance_methods_info
-      else
-        instance_methods_info = []
-        type = :public
+    def get_instance_methods_closure
+      type = :public
+      lambda do |node, instance_methods_info|
         if node.type == :def
           method_name = get_method_name(node)
           args        = get_instance_method_args(node)
           instance_methods_info << InstanceMethodInfo.new(method_name, type, args)
         elsif node.type == :send
-          method = get_send_method(node)
-          new_type = get_method_type_change(method_name)
+          method_name = get_send_method(node)
+          new_type    = get_method_type_change(method_name)
           type = new_type if new_type
         end
-        return instance_methods_info
       end
     end
 
@@ -158,5 +144,25 @@ module UMLInfoGenerator
     def get_method_type_change(method_name)
       [:public, :private, :protected].include?(method_name) ? method_name : nil
     end
+  end
+
+  class BodyNodeWrapper
+    def initialize(body_node)
+      @body_node = body_node
+    end
+
+    def array_operation(&operation)
+      array = []
+      if body_node.type == :begin
+        body_node.children.each { |node| operation.call(node, array) }
+      else
+        operation.call(body_node, array)
+      end
+      array
+    end
+
+    private
+
+    attr_reader :body_node
   end
 end
