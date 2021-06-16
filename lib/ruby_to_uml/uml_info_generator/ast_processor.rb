@@ -8,11 +8,6 @@ module UMLInfoGenerator
     end
 
     def on_class(node)
-      # Class definition form:
-      # first child is class name constant,
-      # second child is superclass constant or nil,
-      # third child is the class body
-      # body is either begin type with children nodes, or a single node of any type
       class_name             = get_class_name(node)
       superclass_name        = get_superclass_name(node)
       class_body_node        = get_class_body(node)
@@ -20,7 +15,6 @@ module UMLInfoGenerator
       wrapped_body_node = BodyNodeWrapper.new(class_body_node)
       instance_methods_info  = wrapped_body_node.array_operation(&get_instance_methods_closure)
       singleton_methods_info = wrapped_body_node.array_operation(&get_singleton_methods_closure)
-
 
       add_inheritence_relationship(class_name, superclass_name) if superclass_name
       add_module_relationships_if_exist(class_body_node, class_name)
@@ -90,11 +84,6 @@ module UMLInfoGenerator
       end
     end
 
-    def get_arguments(node)
-      return [] if node.children.nil?
-      node.children.each_with_object([]) { |node, args| args << node.children[0] }
-    end
-
     def get_singleton_methods_closure
       lambda do |node, singleton_methods_info|
         if node.type == :defs
@@ -110,8 +99,6 @@ module UMLInfoGenerator
     end
 
     def get_constant_name(const_node)
-      # Unscoped Constant form: (const nil :ConstantName)
-      # nil represents no scope, could be scoped to another constant
       constant_name_index = 1
       const_node.children[constant_name_index]
     end
@@ -143,6 +130,11 @@ module UMLInfoGenerator
     def get_singleton_method_args(defs_node)
       args_index = 2
       get_arguments(defs_node.children[args_index])
+    end
+
+    def get_arguments(node)
+      return [] if node.children.nil?
+      node.children.each_with_object([]) { |node, args| args << node.children[0] }
     end
   end
 
