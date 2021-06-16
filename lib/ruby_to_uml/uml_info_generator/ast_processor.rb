@@ -18,8 +18,8 @@ module UMLInfoGenerator
       class_body_node        = get_class_body(node)
 
       wrapped_body_node = BodyNodeWrapper.new(class_body_node)
-      instance_methods_info = wrapped_body_node.array_operation(&get_instance_methods_closure)
-      singleton_methods_info = get_singleton_methods(class_body_node)
+      instance_methods_info  = wrapped_body_node.array_operation(&get_instance_methods_closure)
+      singleton_methods_info = wrapped_body_node.array_operation(&get_singleton_methods_closure)
 
 
       add_inheritence_relationship(class_name, superclass_name) if superclass_name
@@ -95,25 +95,13 @@ module UMLInfoGenerator
       node.children.each_with_object([]) { |node, args| args << node.children[0] }
     end
 
-    def get_singleton_methods(node)
-      if node.type == :begin
-        singleton_methods_info = []
-        node.children.each do |node|
-          if node.type == :defs
-            method_name = get_singleton_method_name(node)
-            args        = get_singleton_method_args(node)
-            singleton_methods_info << SingletonMethodInfo.new(method_name, args)
-          end
-        end
-        return singleton_methods_info
-      else
-        singleton_methods_info = []
+    def get_singleton_methods_closure
+      lambda do |node, singleton_methods_info|
         if node.type == :defs
           method_name = get_singleton_method_name(node)
           args        = get_singleton_method_args(node)
           singleton_methods_info << SingletonMethodInfo.new(method_name, args)
         end
-        return singleton_methods_info
       end
     end
 
