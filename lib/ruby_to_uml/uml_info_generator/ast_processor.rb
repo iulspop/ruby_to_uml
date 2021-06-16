@@ -100,18 +100,18 @@ module UMLInfoGenerator
         singleton_methods_info = []
         node.children.each do |node|
           if node.type == :defs
-            name = node.children[1]
-            args = get_arguments(node.children[2])
-            singleton_methods_info << SingletonMethodInfo.new(name, args)
+            method_name = get_singleton_method_name(node)
+            args        = get_singleton_method_args(node)
+            singleton_methods_info << SingletonMethodInfo.new(method_name, args)
           end
         end
         return singleton_methods_info
       else
         singleton_methods_info = []
         if node.type == :defs
-          name = node.children[1]
-          args = get_arguments(node.children[2])
-          singleton_methods_info << SingletonMethodInfo.new(name, args)
+          method_name = get_singleton_method_name(node)
+          args        = get_singleton_method_args(node)
+          singleton_methods_info << SingletonMethodInfo.new(method_name, args)
         end
         return singleton_methods_info
       end
@@ -145,6 +145,16 @@ module UMLInfoGenerator
 
     def get_method_type_change(method_name)
       [:public, :private, :protected].include?(method_name) ? method_name : nil
+    end
+
+    def get_singleton_method_name(defs_node)
+      name_index = 1
+      defs_node.children[name_index]
+    end
+
+    def get_singleton_method_args(defs_node)
+      args_index = 2
+      get_arguments(defs_node.children[args_index])
     end
   end
 
