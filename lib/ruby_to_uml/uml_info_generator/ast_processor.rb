@@ -13,16 +13,14 @@ module UMLInfoGenerator
       # second child is superclass constant or nil,
       # third child is the class body
       # body is either begin type with children nodes, or a single node of any type
-      class_name      = get_class_name(node)
-      class_body_node = get_class_body(node)
-      superclass_name = get_superclass_name(node)
+      class_name             = get_class_name(node)
+      superclass_name        = get_superclass_name(node)
+      class_body_node        = get_class_body(node)
+      instance_methods_info  = get_instance_methods(class_body_node)
+      singleton_methods_info = get_singleton_methods(class_body_node)
 
       add_inheritence_relationship(class_name, superclass_name) if superclass_name
       add_module_relationships_if_exist(class_body_node, class_name)
-
-      instance_methods_info = get_instance_methods(class_body_node)
-      singleton_methods_info = get_singleton_methods(class_body_node)
-
       add_class(class_name, instance_methods_info, singleton_methods_info)
 
       node.updated(nil, process_all(node))
@@ -45,23 +43,8 @@ module UMLInfoGenerator
       inherit ? get_constant_name(inherit) : nil
     end
 
-    def get_constant_name(constant)
-      # Unscoped Constant form: (const nil :ConstantName)
-      # nil represents no scope, could be scoped to another constant
-      constant_name_index = 1
-      constant.children[constant_name_index]
-    end
-
     def add_inheritence_relationship(class_name, superclass_name)
       relationships << RelationshipInfo.new(class_name, superclass_name, :inherits)
-    end
-
-    def operate(node, &operation)
-      if node.type == :begin
-        node.children.each { |node| operation.call(node) }
-      else
-        operation.call(node)
-      end
     end
 
     def add_module_relationships_if_exist(node, class_name)
@@ -74,6 +57,14 @@ module UMLInfoGenerator
         when :prepend then add_module_relationship(class_name, arguments, :prepends) end
       end
       operate(node, &operation)
+    end
+
+    def operate(node, &operation)
+      if node.type == :begin
+        node.children.each { |node| operation.call(node) }
+      else
+        operation.call(node)
+      end
     end
 
     def add_module_relationship(class_name, arguments, type)
@@ -135,6 +126,13 @@ module UMLInfoGenerator
 
     def add_class(name, instance_methods_info, singleton_methods_info)
       classes << ClassInfo.new(name.to_s, instance_methods_info, singleton_methods_info)
+    end
+
+    def get_constant_name(constant)
+      # Unscoped Constant form: (const nil :ConstantName)
+      # nil represents no scope, could be scoped to another constant
+      constant_name_index = 1
+      constant.children[constant_name_index]
     end
   end
 end
