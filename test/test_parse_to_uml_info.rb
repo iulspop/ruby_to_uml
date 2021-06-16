@@ -2,13 +2,30 @@ require_relative '../lib/ruby_to_uml'
 
 class TestUMLInfoGenerator < Minitest::Test
   def setup
-    files = %w[test/fixtures/linked_list.rb]
-    @uml_info = UMLInfoGenerator.process(files)
+    file = "test/fixtures/linked_list.rb"
+    @uml_info = UMLInfoGenerator.process_file(file)
   end
 
   def test_classes_returns_name_of_every_class_in_files
-    classes = %w[Stack LinkedList EmptyLinkedList]
-    assert_equal(classes, @uml_info.class_names)
+    # SETUP
+    input = <<~MSG.chomp
+      class Stack
+      end
+
+      class LinkedList
+
+        class EmptyLinkedList
+
+        end
+      end
+    MSG
+
+    # Execute
+    uml_info = UMLInfoGenerator.process_code(input)
+
+    # Assert
+    expected = %w[Stack LinkedList EmptyLinkedList]
+    assert_equal(expected, uml_info.class_names)
   end
 
   def test_classes_contain_instance_methods
@@ -79,7 +96,7 @@ class TestUMLInfoGeneratorNew < Minitest::Test
       public yellow(iron)
     MSG
 
-    @uml_info = UMLInfoGenerator.code(code)
+    @uml_info = UMLInfoGenerator.process_code(code)
     expected_methods = [turtle]
     actual_methods = @uml_info.instance_methods
     assert_equal(expected_methods, actual_methods)
@@ -98,7 +115,7 @@ class TestUMLInfoGeneratorNew < Minitest::Test
       self.yellow(iron)
     MSG
 
-    @uml_info = UMLInfoGenerator.code(code)
+    @uml_info = UMLInfoGenerator.process_code(code)
     expected_methods = [turtle]
     actual_methods = @uml_info.singleton_methods
     assert_equal(expected_methods, actual_methods)

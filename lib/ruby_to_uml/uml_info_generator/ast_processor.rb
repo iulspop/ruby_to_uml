@@ -135,7 +135,9 @@ module UMLInfoGenerator
 
     def array_operation(&operation)
       array = []
-      if body_node.type == :begin
+      if body_node.nil?
+        nil
+      elsif body_node.type == :begin
         body_node.children.each { |node| operation.call(node, array) }
       else
         operation.call(body_node, array)
@@ -144,7 +146,9 @@ module UMLInfoGenerator
     end
 
     def simple_operation(&operation)
-      if body_node.type == :begin
+      if body_node.nil?
+        nil
+      elsif body_node.type == :begin
         body_node.children.each { |node| operation.call(node) }
       else
         operation.call(body_node)
