@@ -44,12 +44,13 @@ module UMLInfoGenerator
 
     def add_module_relationships_if_exist_closure(class_name)
       lambda do |node|
-        return if node.type != :send
-        caller, method, arguments = *node
-        case method
-        when :include then add_module_relationship(class_name, arguments, :includes)
-        when :extend  then add_module_relationship(class_name, arguments, :extends)
-        when :prepend then add_module_relationship(class_name, arguments, :prepends) end
+        if node.type == :send
+          _, method, module_name = *node
+          if [:include, :extend, :prepend].include? method
+            verb = (method.to_s + "s").to_sym
+            add_module_relationship(class_name, module_name, verb)
+          end
+        end
       end
     end
 
