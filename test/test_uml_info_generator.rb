@@ -110,8 +110,50 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = ["self.yellow(iron)"]
-      assert_equal(expected, uml_info.singleton_methods)
       _(uml_info.singleton_methods).must_equal(expected)
+    end
+
+    it "returns instance variables defined in the initialize method body" do
+      # Setup
+      input = <<~MSG.chomp
+        class Animal
+          def initialize(name, age)
+            @family
+            @name = name
+            @age = age
+          end
+
+          def bark(sound)
+            @sound = sound
+            puts sound
+          end
+        end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_code(input)
+
+      # Assert
+      expected = [%i[@family @name @age]]
+      _(uml_info.instance_variables).must_equal(expected)
+    end
+
+    it "returns instance variables even if initialize method has one node" do
+      # Setup
+      input = <<~MSG.chomp
+        class Animal
+          def initialize
+            @name
+          end
+        end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_code(input)
+
+      # Assert
+      expected = [%i[@name]]
+      _(uml_info.instance_variables).must_equal(expected)
     end
   end
 

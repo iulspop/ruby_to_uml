@@ -8,15 +8,16 @@ module UMLInfoGenerator
     end
 
     def on_class(node)
-      class_name             = get_class_name(node)
-      superclass_name        = get_superclass_name(node)
-      class_body_node        = BodyNodeWrapper.new(get_class_body(node))
-      instance_methods_info  = class_body_node.array_operation(&get_instance_methods_closure)
-      singleton_methods_info = class_body_node.array_operation(&get_singleton_methods_closure)
+      class_name              = get_class_name(node)
+      superclass_name         = get_superclass_name(node)
+      class_body_node         = BodyNodeWrapper.new(get_class_body(node))
+      instance_methods_info   = class_body_node.array_operation(&get_instance_methods_closure)
+      singleton_methods_info  = class_body_node.array_operation(&get_singleton_methods_closure)
+      instance_variables_info = class_body_node.array_operation(&get_instance_variables_closure)
 
       class_body_node.simple_operation(&add_module_relationships_if_exist_closure(class_name))
       add_inheritence_relationship(class_name, superclass_name) if superclass_name
-      add_class(class_name, instance_methods_info, singleton_methods_info)
+      add_class(class_name, instance_methods_info, singleton_methods_info, instance_variables_info)
 
       node.updated(nil, process_all(node))
     end
@@ -36,27 +37,6 @@ module UMLInfoGenerator
     def get_superclass_name(node)
       constant, inherit, children = *node
       inherit ? get_constant_name(inherit) : nil
-    end
-
-    def add_inheritence_relationship(class_name, superclass_name)
-      relationships << RelationshipInfo.new(class_name, superclass_name, :inherits)
-    end
-
-    def add_module_relationships_if_exist_closure(class_name)
-      lambda do |node|
-        if node.type == :send
-          _, method, module_name = *node
-          if [:include, :extend, :prepend].include? method
-            verb = (method.to_s + "s").to_sym
-            add_module_relationship(class_name, module_name, verb)
-          end
-        end
-      end
-    end
-
-    def add_module_relationship(class_name, arguments, type)
-      module_name = get_constant_name(arguments)
-      relationships << RelationshipInfo.new(class_name, module_name, type)
     end
 
     def get_instance_methods_closure
@@ -84,8 +64,44 @@ module UMLInfoGenerator
       end
     end
 
-    def add_class(name, instance_methods_info, singleton_methods_info)
-      classes << ClassInfo.new(name.to_s, instance_methods_info, singleton_methods_info)
+    def get_instance_variables_closure
+      lambda do |node, instance_variables_info|
+        if node.type == :def && get_method_name(node) == :initialize
+          method_body_node = BodyNodeWrapper.new(get_method_body_node(node))
+          closure = lambda do |node|
+            if node.type == :ivar || node.type == :ivasgn
+              variable_name = get_instance_variable_name(node)
+              instance_variables_info << variable_name
+            end
+          end
+          ho = method_body_node.simple_operation(&closure)
+        end
+      end
+    end
+
+    def add_inheritence_relationship(class_name, superclass_name)
+      relationships << RelationshipInfo.new(class_name, superclass_name, :inherits)
+    end
+
+    def add_module_relationships_if_exist_closure(class_name)
+      lambda do |node|
+        if node.type == :send
+          _, method, module_name = *node
+          if [:include, :extend, :prepend].include? method
+            verb = (method.to_s + "s").to_sym
+            add_module_relationship(class_name, module_name, verb)
+          end
+        end
+      end
+    end
+
+    def add_module_relationship(class_name, arguments, type)
+      module_name = get_constant_name(arguments)
+      relationships << RelationshipInfo.new(class_name, module_name, type)
+    end
+
+    def add_class(name, instance_methods_info, singleton_methods_info, instance_variables_info)
+      classes << ClassInfo.new(name.to_s, instance_methods_info, singleton_methods_info, instance_variables_info)
     end
 
     def get_constant_name(const_node)
@@ -125,6 +141,16 @@ module UMLInfoGenerator
     def get_arguments(node)
       return [] if node.children.nil?
       node.children.each_with_object([]) { |node, args| args << node.children[0] }
+    end
+
+    def get_method_body_node(def_node)
+      body_index = 2
+      def_node.children[body_index]
+    end
+
+    def get_instance_variable_name(node)
+      name_index = 0
+      node.children[name_index]
     end
   end
 
