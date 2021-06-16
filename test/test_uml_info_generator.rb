@@ -158,7 +158,7 @@ describe UMLInfoGenerator do
   end
 
   describe 'relationships info' do
-    it "returns inheritence relationsips" do
+    it "returns inheritence relationships" do
       input = <<~MSG.chomp
         class EmptyLinkedList < LinkedList
           class Stack < Heap; end
@@ -173,7 +173,7 @@ describe UMLInfoGenerator do
       _(uml_info.relationships).must_equal(expected)
     end
 
-    it "returns include relationsips" do
+    it "returns include relationships" do
       # Setup
       input = <<~MSG.chomp
         class LinkedList
@@ -189,7 +189,7 @@ describe UMLInfoGenerator do
       _(uml_info.relationships).must_equal(expected)
     end
 
-    it "returns extend relationsips" do
+    it "returns extend relationships" do
       # Setup
       input = <<~MSG.chomp
         class LinkedList
@@ -205,7 +205,7 @@ describe UMLInfoGenerator do
       _(uml_info.relationships).must_equal(expected)
     end
 
-    it "returns prepend relationsips" do
+    it "returns prepend relationships" do
       # Setup
       input = <<~MSG.chomp
         class Stack
