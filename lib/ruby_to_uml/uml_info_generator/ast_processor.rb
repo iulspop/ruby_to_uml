@@ -74,8 +74,9 @@ module UMLInfoGenerator
 
     def get_instance_methods(node)
       if node.type == :begin
+        instance_methods_info = []
         type = :public
-        node.children.each_with_object([]) do |node, instance_methods_info|
+        node.children.each do |node|
           if node.type == :def
             name = node.children[0]
             args = get_arguments(node.children[1])
@@ -88,14 +89,16 @@ module UMLInfoGenerator
             when :protected then type = :protected end
           end
         end
+        return instance_methods_info
       else
+        instance_methods_info = []
+        type = :public
         if node.type == :def
           name = node.children[0]
           args = get_arguments(node.children[1])
-          return [InstanceMethodInfo.new(name, :public, args)]
-        else
-          []
+          instance_methods_info << InstanceMethodInfo.new(name, type, args)
         end
+        return instance_methods_info
       end
     end
 

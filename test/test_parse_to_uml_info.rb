@@ -64,3 +64,24 @@ class TestUMLInfoGenerator < Minitest::Test
     assert_includes(@uml_info.relationships, prepends_relationship)
   end
 end
+
+class TestUMLInfoGeneratorNew < Minitest::Test
+  def test_classes_contain_instance_methods_even_when_only_one_method_defined
+    code = <<~MSG.chomp
+      class Turtle
+        def yellow(iron)
+
+        end
+      end
+    MSG
+
+    turtle = <<~MSG.chomp
+      public yellow(iron)
+    MSG
+
+    @uml_info = UMLInfoGenerator.code(code)
+    expected_methods = [turtle]
+    actual_methods = @uml_info.classes.map { |class_info| class_info.instance_methods_info.map(&:to_s).join("\n") }
+    assert_equal(expected_methods, actual_methods)
+  end
+end

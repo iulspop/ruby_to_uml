@@ -3,14 +3,14 @@ require_relative "info_classes.rb"
 
 module UMLInfoGenerator
   def self.process(files)
-    top_level_node = parse_file_to_ast(files[0])
+    top_level_node = Parser::CurrentRuby.parse_file(files[0])
     parse_ast_to_uml_info(top_level_node)
   end
 
-  def self.parse_file_to_ast(file)
-    Parser::CurrentRuby.parse_file(file)
+  def self.code(code)
+    top_level_node = Parser::CurrentRuby.parse(code)
+    parse_ast_to_uml_info(top_level_node)
   end
-  private_class_method :parse_file_to_ast
 
   def self.parse_ast_to_uml_info(top_level_node)
     processor = ASTProcessor.new
