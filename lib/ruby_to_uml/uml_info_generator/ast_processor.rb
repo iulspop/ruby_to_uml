@@ -82,11 +82,9 @@ module UMLInfoGenerator
             args        = get_instance_method_args(node)
             instance_methods_info << InstanceMethodInfo.new(method_name, type, args)
           elsif node.type == :send
-            caller, method, arguments = *node
-            case method
-            when :public    then type = :public
-            when :private   then type = :private
-            when :protected then type = :protected end
+            method_name = get_send_method(node)
+            new_type    = get_method_type_change(method_name)
+            type = new_type if new_type
           end
         end
         return instance_methods_info
@@ -98,11 +96,9 @@ module UMLInfoGenerator
           args        = get_instance_method_args(node)
           instance_methods_info << InstanceMethodInfo.new(method_name, type, args)
         elsif node.type == :send
-          caller, method, arguments = *node
-          case method
-          when :public    then type = :public
-          when :private   then type = :private
-          when :protected then type = :protected end
+          method = get_send_method(node)
+          new_type = get_method_type_change(method_name)
+          type = new_type if new_type
         end
         return instance_methods_info
       end
@@ -152,6 +148,15 @@ module UMLInfoGenerator
     def get_instance_method_args(def_node)
       args_index = 1
       get_arguments(def_node.children[args_index])
+    end
+
+    def get_send_method(send_node)
+      caller, method, arguments = *send_node
+      method
+    end
+
+    def get_method_type_change(method_name)
+      [:public, :private, :protected].include?(method_name) ? method_name : nil
     end
   end
 end
