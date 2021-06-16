@@ -10,14 +10,12 @@ module UMLInfoGenerator
     def on_class(node)
       class_name             = get_class_name(node)
       superclass_name        = get_superclass_name(node)
-      class_body_node        = get_class_body(node)
+      class_body_node        = BodyNodeWrapper.new(get_class_body(node))
+      instance_methods_info  = class_body_node.array_operation(&get_instance_methods_closure)
+      singleton_methods_info = class_body_node.array_operation(&get_singleton_methods_closure)
 
-      wrapped_body_node = BodyNodeWrapper.new(class_body_node)
-      instance_methods_info  = wrapped_body_node.array_operation(&get_instance_methods_closure)
-      singleton_methods_info = wrapped_body_node.array_operation(&get_singleton_methods_closure)
-
+      class_body_node.simple_operation(&add_module_relationships_if_exist_closure(class_name))
       add_inheritence_relationship(class_name, superclass_name) if superclass_name
-      add_module_relationships_if_exist(class_body_node, class_name)
       add_class(class_name, instance_methods_info, singleton_methods_info)
 
       node.updated(nil, process_all(node))
@@ -44,23 +42,14 @@ module UMLInfoGenerator
       relationships << RelationshipInfo.new(class_name, superclass_name, :inherits)
     end
 
-    def add_module_relationships_if_exist(node, class_name)
-      operation = lambda do |node|
+    def add_module_relationships_if_exist_closure(class_name)
+      lambda do |node|
         return if node.type != :send
         caller, method, arguments = *node
         case method
         when :include then add_module_relationship(class_name, arguments, :includes)
         when :extend  then add_module_relationship(class_name, arguments, :extends)
         when :prepend then add_module_relationship(class_name, arguments, :prepends) end
-      end
-      operate(node, &operation)
-    end
-
-    def operate(node, &operation)
-      if node.type == :begin
-        node.children.each { |node| operation.call(node) }
-      else
-        operation.call(node)
       end
     end
 
@@ -151,6 +140,14 @@ module UMLInfoGenerator
         operation.call(body_node, array)
       end
       array
+    end
+
+    def simple_operation(&operation)
+      if body_node.type == :begin
+        body_node.children.each { |node| operation.call(node) }
+      else
+        operation.call(body_node)
+      end
     end
 
     private
