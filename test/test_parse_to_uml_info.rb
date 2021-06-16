@@ -120,8 +120,19 @@ class TestUMLInfoGeneratorCapturesRelationshipsCorrectly < Minitest::Test
   end
 
   def test_relationships_includes_any_inheritence_relationships
-    inherits_relationship = "EmptyLinkedList inherits LinkedList"
-    assert_includes(@uml_info.relationships, inherits_relationship)
+    # Setup
+    input = <<~MSG.chomp
+      class EmptyLinkedList < LinkedList
+        class Stack < Heap; end
+      end
+    MSG
+
+    # Execute
+    uml_info = UMLInfoGenerator.process_code(input)
+
+    # Assert
+    expected = ["EmptyLinkedList inherits LinkedList", "Stack inherits Heap"]
+    assert_equal(expected, uml_info.relationships)
   end
 
   def test_relationships_includes_any_include_relationships
