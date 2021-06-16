@@ -31,6 +31,14 @@ module UMLInfoGenerator
       classes.map(&:name)
     end
 
+    def instance_methods
+      classes.map { |class_info| class_info.instance_methods_info.map(&:to_s).join("\n") }
+    end
+
+    def singleton_methods
+      classes.map { |class_info| class_info.singleton_methods_info.map(&:to_s).join("\n") }
+    end
+
     def relationships
       @relationships.map(&:to_s)
     end
