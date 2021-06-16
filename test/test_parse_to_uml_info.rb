@@ -7,7 +7,7 @@ class TestUMLInfoGenerator < Minitest::Test
   end
 
   def test_classes_returns_name_of_every_class_in_files
-    # SETUP
+    # Setup
     input = <<~MSG.chomp
       class Stack
       end
@@ -84,7 +84,8 @@ end
 
 class TestUMLInfoGeneratorNew < Minitest::Test
   def test_classes_contain_instance_methods_even_when_only_one_method_defined
-    code = <<~MSG.chomp
+    # Setup
+    input = <<~MSG.chomp
       class Turtle
         def yellow(iron)
 
@@ -92,32 +93,29 @@ class TestUMLInfoGeneratorNew < Minitest::Test
       end
     MSG
 
-    turtle = <<~MSG.chomp
-      public yellow(iron)
-    MSG
+    # Execute
+    uml_info = UMLInfoGenerator.process_code(input)
 
-    @uml_info = UMLInfoGenerator.process_code(code)
-    expected_methods = [turtle]
-    actual_methods = @uml_info.instance_methods
-    assert_equal(expected_methods, actual_methods)
+    # Assert
+    expected = ["public yellow(iron)"]
+    assert_equal(expected, uml_info.instance_methods)
   end
 
   def test_classes_contain_singleton_methods_even_when_only_one_method_defined
-    code = <<~MSG.chomp
-      class Turtle
-        def self.yellow(iron)
+    # Setup
+    input = <<~MSG.chomp
+    class Turtle
+      def self.yellow(iron)
 
-        end
       end
+    end
     MSG
 
-    turtle = <<~MSG.chomp
-      self.yellow(iron)
-    MSG
+    # Execute
+    uml_info = UMLInfoGenerator.process_code(input)
 
-    @uml_info = UMLInfoGenerator.process_code(code)
-    expected_methods = [turtle]
-    actual_methods = @uml_info.singleton_methods
-    assert_equal(expected_methods, actual_methods)
+    # Assert
+    expected = ["self.yellow(iron)"]
+    assert_equal(expected, uml_info.singleton_methods)
   end
 end
