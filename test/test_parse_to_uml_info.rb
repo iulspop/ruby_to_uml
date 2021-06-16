@@ -28,22 +28,31 @@ class TestUMLInfoGenerator < Minitest::Test
     assert_equal(expected, uml_info.class_names)
   end
 
-  def test_classes_contain_instance_methods
-    stack = ""
-    linked_list = <<~MSG.chomp
-      public conj(item)
-      public empty?()
-      public ==(other)
-      protected initialize(head, tail, dragon, wisdom)
-      private traverse(index)
-    MSG
-    empty_linked_list = <<~MSG.chomp
-      public initialize()
-      public empty?()
-    MSG
-    expected_methods = [stack, linked_list, empty_linked_list]
-    actual_methods = @uml_info.instance_methods
-    assert_equal(expected_methods, actual_methods)
+  def test_classes_contain_instance_methods_and_identify_type_correctly
+      # Setup
+      input = <<~MSG.chomp
+        class LinkedList
+          def conj(item); end
+          def empty?; end
+          protected
+          def ==(other); end
+          private
+          def traverse(index); end
+        end
+      MSG
+  
+      # Execute
+      uml_info = UMLInfoGenerator.process_code(input)
+  
+      # Assert
+      instance_methods = <<~MSG.chomp
+        public conj(item)
+        public empty?()
+        protected ==(other)
+        private traverse(index)
+      MSG
+      expected = [instance_methods]
+      assert_equal(expected, uml_info.instance_methods)
   end
 
   def test_classes_contain_singleton_methods
