@@ -78,9 +78,9 @@ module UMLInfoGenerator
         type = :public
         node.children.each do |node|
           if node.type == :def
-            name = node.children[0]
-            args = get_arguments(node.children[1])
-            instance_methods_info << InstanceMethodInfo.new(name, type, args)
+            method_name = get_method_name(node)
+            args        = get_instance_method_args(node)
+            instance_methods_info << InstanceMethodInfo.new(method_name, type, args)
           elsif node.type == :send
             caller, method, arguments = *node
             case method
@@ -94,9 +94,15 @@ module UMLInfoGenerator
         instance_methods_info = []
         type = :public
         if node.type == :def
-          name = node.children[0]
-          args = get_arguments(node.children[1])
-          instance_methods_info << InstanceMethodInfo.new(name, type, args)
+          method_name = get_method_name(node)
+          args        = get_instance_method_args(node)
+          instance_methods_info << InstanceMethodInfo.new(method_name, type, args)
+        elsif node.type == :send
+          caller, method, arguments = *node
+          case method
+          when :public    then type = :public
+          when :private   then type = :private
+          when :protected then type = :protected end
         end
         return instance_methods_info
       end
@@ -131,11 +137,21 @@ module UMLInfoGenerator
       classes << ClassInfo.new(name.to_s, instance_methods_info, singleton_methods_info)
     end
 
-    def get_constant_name(constant)
+    def get_constant_name(const_node)
       # Unscoped Constant form: (const nil :ConstantName)
       # nil represents no scope, could be scoped to another constant
       constant_name_index = 1
-      constant.children[constant_name_index]
+      const_node.children[constant_name_index]
+    end
+
+    def get_method_name(def_node)
+      name_index = 0
+      def_node.children[name_index]
+    end
+
+    def get_instance_method_args(def_node)
+      args_index = 1
+      get_arguments(def_node.children[args_index])
     end
   end
 end
