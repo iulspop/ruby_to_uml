@@ -98,11 +98,11 @@ describe UMLInfoGenerator do
     it "returns singleton methods even when class body has a single node" do
       # Setup
       input = <<~MSG.chomp
-      class Turtle
-        def self.yellow(iron)
+        class Turtle
+          def self.yellow(iron)
 
+          end
         end
-      end
       MSG
 
       # Execute
