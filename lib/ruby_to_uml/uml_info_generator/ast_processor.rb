@@ -97,21 +97,23 @@ module UMLInfoGenerator
 
     def get_singleton_methods(node)
       if node.type == :begin
-        node.children.each_with_object([]) do |node, singleton_methods_info|
+        singleton_methods_info = []
+        node.children.each do |node|
           if node.type == :defs
             name = node.children[1]
             args = get_arguments(node.children[2])
             singleton_methods_info << SingletonMethodInfo.new(name, args)
           end
         end
+        return singleton_methods_info
       else
+        singleton_methods_info = []
         if node.type == :defs
           name = node.children[1]
           args = get_arguments(node.children[2])
-          return [SingletonMethodInfo.new(name, args)]
-        else
-          []
+          singleton_methods_info << SingletonMethodInfo.new(name, args)
         end
+        return singleton_methods_info
       end
     end
 

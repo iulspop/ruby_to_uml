@@ -84,4 +84,23 @@ class TestUMLInfoGeneratorNew < Minitest::Test
     actual_methods = @uml_info.classes.map { |class_info| class_info.instance_methods_info.map(&:to_s).join("\n") }
     assert_equal(expected_methods, actual_methods)
   end
+
+  def test_classes_contain_singleton_methods_even_when_only_one_method_defined
+    code = <<~MSG.chomp
+      class Turtle
+        def self.yellow(iron)
+
+        end
+      end
+    MSG
+
+    turtle = <<~MSG.chomp
+      self.yellow(iron)
+    MSG
+
+    @uml_info = UMLInfoGenerator.code(code)
+    expected_methods = [turtle]
+    actual_methods = @uml_info.classes.map { |class_info| class_info.singleton_methods_info.map(&:to_s).join("\n") }
+    assert_equal(expected_methods, actual_methods)
+  end
 end
