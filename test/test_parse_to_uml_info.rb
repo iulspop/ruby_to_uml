@@ -1,11 +1,6 @@
 require_relative '../lib/ruby_to_uml'
 
-class TestUMLInfoGenerator < Minitest::Test
-  def setup
-    file = "test/fixtures/linked_list.rb"
-    @uml_info = UMLInfoGenerator.process_file(file)
-  end
-
+class TestUMLInfoGeneratorCapturesClassInfoCorrectly < Minitest::Test
   def test_classes_returns_name_of_every_class_in_files
     # Setup
     input = <<~MSG.chomp
@@ -81,28 +76,6 @@ class TestUMLInfoGenerator < Minitest::Test
       assert_equal(expected, uml_info.singleton_methods)
   end
 
-  def test_relationships_includes_any_inheritence_relationships
-    inherits_relationship = "EmptyLinkedList inherits LinkedList"
-    assert_includes(@uml_info.relationships, inherits_relationship)
-  end
-
-  def test_relationships_includes_any_include_relationships
-    includes_relationship = "LinkedList includes Enumerable"
-    assert_includes(@uml_info.relationships, includes_relationship)
-  end
-
-  def test_relationships_includes_any_extend_relationships
-    extends_relationship = "LinkedList extends Utils"
-    assert_includes(@uml_info.relationships, extends_relationship)
-  end
-
-  def test_relationships_includes_any_prepend_relationships
-    prepends_relationship = "Stack prepends Extras"
-    assert_includes(@uml_info.relationships, prepends_relationship)
-  end
-end
-
-class TestUMLInfoGeneratorNew < Minitest::Test
   def test_classes_contain_instance_methods_even_when_only_one_method_defined
     # Setup
     input = <<~MSG.chomp
@@ -137,5 +110,32 @@ class TestUMLInfoGeneratorNew < Minitest::Test
     # Assert
     expected = ["self.yellow(iron)"]
     assert_equal(expected, uml_info.singleton_methods)
+  end
+end
+
+class TestUMLInfoGeneratorCapturesRelationshipsCorrectly < Minitest::Test
+  def setup
+    file = "test/fixtures/linked_list.rb"
+    @uml_info = UMLInfoGenerator.process_file(file)
+  end
+
+  def test_relationships_includes_any_inheritence_relationships
+    inherits_relationship = "EmptyLinkedList inherits LinkedList"
+    assert_includes(@uml_info.relationships, inherits_relationship)
+  end
+
+  def test_relationships_includes_any_include_relationships
+    includes_relationship = "LinkedList includes Enumerable"
+    assert_includes(@uml_info.relationships, includes_relationship)
+  end
+
+  def test_relationships_includes_any_extend_relationships
+    extends_relationship = "LinkedList extends Utils"
+    assert_includes(@uml_info.relationships, extends_relationship)
+  end
+
+  def test_relationships_includes_any_prepend_relationships
+    prepends_relationship = "Stack prepends Extras"
+    assert_includes(@uml_info.relationships, prepends_relationship)
   end
 end
