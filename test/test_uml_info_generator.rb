@@ -21,7 +21,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = %w[Stack LinkedList EmptyLinkedList]
-      _(expected).must_equal(uml_info.class_names)
+      _(uml_info.class_names).must_equal(expected)
     end
 
     it "returns instance methods with correct type and arguments" do
@@ -48,7 +48,7 @@ describe UMLInfoGenerator do
         private traverse(index)
       MSG
       expected = [instance_methods]
-      _(expected).must_equal(uml_info.instance_methods)
+      _(uml_info.instance_methods).must_equal(expected)
     end
 
     it "returns singleton methods with arguments and without type" do
@@ -74,7 +74,7 @@ describe UMLInfoGenerator do
         self.traverse(index)
       MSG
       expected = [singleton_methods]
-      _(expected).must_equal(uml_info.singleton_methods)
+      _(uml_info.singleton_methods).must_equal(expected)
     end
 
     it "returns instance methods even when class body has a single node" do
@@ -92,7 +92,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = ["public yellow(iron)"]
-      _(expected).must_equal(uml_info.instance_methods)
+      _(uml_info.instance_methods).must_equal(expected)
     end
 
     it "returns singleton methods even when class body has a single node" do
@@ -111,7 +111,7 @@ describe UMLInfoGenerator do
       # Assert
       expected = ["self.yellow(iron)"]
       assert_equal(expected, uml_info.singleton_methods)
-      _(expected).must_equal(uml_info.singleton_methods)
+      _(uml_info.singleton_methods).must_equal(expected)
     end
   end
 
@@ -128,7 +128,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = ["EmptyLinkedList inherits LinkedList", "Stack inherits Heap"]
-      _(expected).must_equal(uml_info.relationships)
+      _(uml_info.relationships).must_equal(expected)
     end
 
     it "returns include relationsips" do
@@ -144,7 +144,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = ["LinkedList includes Enumerable"]
-      _(expected).must_equal(uml_info.relationships)
+      _(uml_info.relationships).must_equal(expected)
     end
 
     it "returns extend relationsips" do
@@ -160,7 +160,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = ["LinkedList extends Utils"]
-      _(expected).must_equal(uml_info.relationships)
+      _(uml_info.relationships).must_equal(expected)
     end
 
     it "returns prepend relationsips" do
@@ -176,7 +176,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = ["Stack prepends Extras"]
-      _(expected).must_equal(uml_info.relationships)
+      _(uml_info.relationships).must_equal(expected)
     end
   end
 end
