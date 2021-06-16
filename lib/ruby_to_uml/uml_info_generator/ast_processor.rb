@@ -1,9 +1,10 @@
 module UMLInfoGenerator
   class ASTProcessor < Parser::AST::Processor
-    attr_reader :classes, :relationships
+    attr_reader :classes, :modules, :relationships
 
     def initialize
       @classes = []
+      @modules = []
       @relationships = []
     end
 
@@ -18,6 +19,14 @@ module UMLInfoGenerator
       class_body_node.simple_operation(&add_module_relationships_if_exist_closure(class_name))
       add_inheritence_relationship(class_name, superclass_name) if superclass_name
       add_class(class_name, instance_methods_info, singleton_methods_info, instance_variables_info)
+
+      node.updated(nil, process_all(node))
+    end
+
+    def on_module(node)
+      module_name = get_module_name(node)
+
+      add_module(module_name)
 
       node.updated(nil, process_all(node))
     end
@@ -101,7 +110,11 @@ module UMLInfoGenerator
     end
 
     def add_class(name, instance_methods_info, singleton_methods_info, instance_variables_info)
-      classes << ClassInfo.new(name.to_s, instance_methods_info, singleton_methods_info, instance_variables_info)
+      classes << ClassInfo.new(name, instance_methods_info, singleton_methods_info, instance_variables_info)
+    end
+
+    def add_module(name)
+      @modules << ModuleInfo.new(name)
     end
 
     def get_constant_name(const_node)
@@ -151,6 +164,11 @@ module UMLInfoGenerator
     def get_instance_variable_name(node)
       name_index = 0
       node.children[name_index]
+    end
+
+    def get_module_name(node)
+      constant, _ = *node
+      get_constant_name(constant)
     end
   end
 

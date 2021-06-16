@@ -20,7 +20,7 @@ describe UMLInfoGenerator do
       uml_info = UMLInfoGenerator.process_code(input)
 
       # Assert
-      expected = %w[Stack LinkedList EmptyLinkedList]
+      expected = %i[Stack LinkedList EmptyLinkedList]
       _(uml_info.class_names).must_equal(expected)
     end
 
@@ -154,6 +154,26 @@ describe UMLInfoGenerator do
       # Assert
       expected = [%i[@name]]
       _(uml_info.instance_variables).must_equal(expected)
+    end
+  end
+
+  describe 'module info' do
+    it "returns name of every module" do
+      # Setup
+      input = <<~MSG.chomp
+        module Enumerable; end
+
+        module Rake
+          module TaskRunner; end
+        end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_code(input)
+
+      # Assert
+      expected = %i[Enumerable Rake TaskRunner]
+      _(uml_info.module_names).must_equal(expected)
     end
   end
 

@@ -6,6 +6,10 @@ module UMLInfoGenerator
     :instance_variables_info
   )
 
+  ModuleInfo = Struct.new(
+    :name
+  )
+
   RelationshipInfo = Struct.new(:subject, :object, :verb) do
     def to_s
       "#{subject} #{verb} #{object}"
@@ -25,7 +29,6 @@ module UMLInfoGenerator
   end
 
   class UMLInfo
-    attr_reader :classes
     def initialize(classes, modules = [], relationships = [])
       @classes = classes
       @modules = modules
@@ -34,6 +37,10 @@ module UMLInfoGenerator
 
     def class_names
       classes.map(&:name)
+    end
+
+    def module_names
+      modules.map(&:name)
     end
 
     def instance_methods
@@ -51,5 +58,9 @@ module UMLInfoGenerator
     def relationships
       @relationships.map(&:to_s)
     end
+
+    private
+
+    attr_reader :classes, :modules
   end
 end
