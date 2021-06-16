@@ -55,19 +55,30 @@ class TestUMLInfoGenerator < Minitest::Test
       assert_equal(expected, uml_info.instance_methods)
   end
 
-  def test_classes_contain_singleton_methods
-    stack = ""
-    linked_list = <<~MSG.chomp
-      self.make(args)
-      self.cons(head, tail)
-      self.empty()
-    MSG
-    empty_linked_list = <<~MSG.chomp
-      self.cons(head, tail)
-    MSG
-    expected_methods = [stack, linked_list, empty_linked_list]
-    actual_methods = @uml_info.singleton_methods
-    assert_equal(expected_methods, actual_methods)
+  def test_classes_contain_singleton_methods_and_ignore_public_private_protected_type_and_ignore_instance_methods
+      # Setup
+      input = <<~MSG.chomp
+        class LinkedList
+          def self.conj(item); end
+          def empty?; end
+          protected
+          def self.==(other); end
+          private
+          def self.traverse(index); end
+        end
+      MSG
+  
+      # Execute
+      uml_info = UMLInfoGenerator.process_code(input)
+  
+      # Assert
+      singleton_methods = <<~MSG.chomp
+        self.conj(item)
+        self.==(other)
+        self.traverse(index)
+      MSG
+      expected = [singleton_methods]
+      assert_equal(expected, uml_info.singleton_methods)
   end
 
   def test_relationships_includes_any_inheritence_relationships
