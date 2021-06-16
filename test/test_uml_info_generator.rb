@@ -114,11 +114,6 @@ class TestUMLInfoGeneratorCapturesClassInfoCorrectly < Minitest::Test
 end
 
 class TestUMLInfoGeneratorCapturesRelationshipsCorrectly < Minitest::Test
-  def setup
-    file = "test/fixtures/linked_list.rb"
-    @uml_info = UMLInfoGenerator.process_file(file)
-  end
-
   def test_relationships_includes_any_inheritence_relationships
     # Setup
     input = <<~MSG.chomp
@@ -136,17 +131,50 @@ class TestUMLInfoGeneratorCapturesRelationshipsCorrectly < Minitest::Test
   end
 
   def test_relationships_includes_any_include_relationships
-    includes_relationship = "LinkedList includes Enumerable"
-    assert_includes(@uml_info.relationships, includes_relationship)
+    # Setup
+    input = <<~MSG.chomp
+      class LinkedList
+        include Enumerable
+      end
+    MSG
+
+    # Execute
+    uml_info = UMLInfoGenerator.process_code(input)
+
+    # Assert
+    expected = ["LinkedList includes Enumerable"]
+    assert_equal(expected, uml_info.relationships)
   end
 
   def test_relationships_includes_any_extend_relationships
-    extends_relationship = "LinkedList extends Utils"
-    assert_includes(@uml_info.relationships, extends_relationship)
+    # Setup
+    input = <<~MSG.chomp
+      class LinkedList
+        extend Utils
+      end
+    MSG
+
+    # Execute
+    uml_info = UMLInfoGenerator.process_code(input)
+
+    # Assert
+    expected = ["LinkedList extends Utils"]
+    assert_equal(expected, uml_info.relationships)
   end
 
   def test_relationships_includes_any_prepend_relationships
-    prepends_relationship = "Stack prepends Extras"
-    assert_includes(@uml_info.relationships, prepends_relationship)
+    # Setup
+    input = <<~MSG.chomp
+      class Stack
+        prepend Extras
+      end
+    MSG
+
+    # Execute
+    uml_info = UMLInfoGenerator.process_code(input)
+
+    # Assert
+    expected = ["Stack prepends Extras"]
+    assert_equal(expected, uml_info.relationships)
   end
 end
