@@ -135,7 +135,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = [%i[@family @name @age]]
-      _(uml_info.instance_variables).must_equal(expected)
+      _(uml_info.class_instance_variables).must_equal(expected)
     end
 
     it "returns instance variables even if initialize method has one node" do
@@ -153,7 +153,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = [%i[@name]]
-      _(uml_info.instance_variables).must_equal(expected)
+      _(uml_info.class_instance_variables).must_equal(expected)
     end
   end
 
@@ -271,7 +271,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = ["EmptyLinkedList inherits LinkedList", "Stack inherits Heap"]
-      _(uml_info.relationships).must_equal(expected)
+      _(uml_info.relationship_descriptions).must_equal(expected)
     end
 
     it "returns include relationships" do
@@ -287,7 +287,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = ["LinkedList includes Enumerable"]
-      _(uml_info.relationships).must_equal(expected)
+      _(uml_info.relationship_descriptions).must_equal(expected)
     end
 
     it "returns extend relationships" do
@@ -303,7 +303,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = ["LinkedList extends Utils"]
-      _(uml_info.relationships).must_equal(expected)
+      _(uml_info.relationship_descriptions).must_equal(expected)
     end
 
     it "returns prepend relationships" do
@@ -319,7 +319,7 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = ["Stack prepends Extras"]
-      _(uml_info.relationships).must_equal(expected)
+      _(uml_info.relationship_descriptions).must_equal(expected)
     end
   end
 end

@@ -4,6 +4,14 @@ require_relative "ast_processor.rb"
 require_relative "info_classes.rb"
 
 module UMLInfoGenerator
+  def self.process_multiple_code_snippets(code_snippets)
+    uml_infos = code_snippets.each_with_object([]) do |code, uml_infos|
+      uml_infos << process_code(code)
+    end
+
+    uml_infos.reduce { |accumulator, uml_info| uml_info.merge(accumulator) }
+  end
+
   def self.process_file(file)
     top_level_node = Parser::CurrentRuby.parse_file(file)
     parse_ast_to_uml_info(top_level_node)

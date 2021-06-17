@@ -31,7 +31,7 @@ module UMLInfoGenerator
   end
 
   class UMLInfo
-    def initialize(classes, modules = [], relationships = [])
+    def initialize(classes, modules, relationships)
       @classes = classes
       @modules = modules
       @relationships = relationships
@@ -61,16 +61,21 @@ module UMLInfoGenerator
       modules.map { |class_info| class_info.singleton_methods_info.map(&:to_s).join("\n") }
     end
 
-    def instance_variables
+    def class_instance_variables
       classes.map { |class_info| class_info.instance_variables_info }
     end
 
-    def relationships
-      @relationships.map(&:to_s)
+    def relationship_descriptions
+      relationships.map(&:to_s)
     end
 
-    private
+    def merge(other_uml_info)
+      unique_relationships = (other_uml_info.relationships + relationships).uniq
+      UMLInfo.new([], [], unique_relationships)
+    end
 
-    attr_reader :classes, :modules
+    protected
+
+    attr_reader :classes, :modules, :relationships
   end
 end

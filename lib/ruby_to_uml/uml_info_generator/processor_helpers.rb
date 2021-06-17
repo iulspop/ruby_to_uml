@@ -147,8 +147,8 @@ module UMLInfoGenerator
       singleton_methods_info  = class_body_node.array_operation(&get_singleton_methods_closure)
       instance_variables_info = class_body_node.array_operation(&get_instance_variables_closure)
 
-      class_body_node.simple_operation(&add_module_relationships_if_exist_closure(class_name))
       add_inheritence_relationship(class_name, superclass_name) if superclass_name
+      class_body_node.simple_operation(&add_module_relationships_if_exist_closure(class_name))
 
       add_class(class_name, instance_methods_info, singleton_methods_info, instance_variables_info)
 
