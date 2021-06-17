@@ -52,7 +52,7 @@ module UMLInfoGenerator
               instance_variables_info << variable_name
             end
           end
-          ho = method_body_node.simple_operation(&closure)
+          method_body_node.simple_operation(&closure)
         end
       end
     end
