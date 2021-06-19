@@ -71,12 +71,43 @@ module UMLInfoGenerator
 
     def merge(other_uml_info)
       unique_relationships = (other_uml_info.relationships + relationships).uniq
-      unique_classes = (other_uml_info.classes + classes).uniq
+      unique_classes = merge_classes(classes, other_uml_info.classes)
       UMLInfo.new(unique_classes, [], unique_relationships)
     end
 
     protected
 
     attr_reader :classes, :modules, :relationships
+
+    private
+
+    def merge_classes(classes, other_classes)
+      unique_classes = []
+      merged = []
+
+      distinct_classes = (classes + other_classes).uniq
+
+      distinct_classes.each do |class_1|
+        next if merged.include?(class_1.name)
+
+        matched_class = nil
+        match = distinct_classes.any? do |class_2|
+          matched_class = class_2
+          class_1.name == class_2.name && class_1.object_id != class_2.object_id
+        end
+
+        if match
+          uniq_instance_methods = (matched_class.instance_methods_info + class_1.instance_methods_info).uniq
+          uniq_singleton_methods = (matched_class.singleton_methods_info + class_1.singleton_methods_info).uniq
+          uniq_instance_variables = (matched_class.instance_variables_info + class_1.instance_variables_info).uniq
+          unique_classes << ClassInfo.new(class_1.name, uniq_instance_methods, uniq_singleton_methods, uniq_instance_variables)
+          merged << class_1.name
+        else
+          unique_classes << class_1
+        end
+      end
+
+      unique_classes
+    end
   end
 end

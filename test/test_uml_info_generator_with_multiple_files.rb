@@ -42,9 +42,12 @@ describe UMLInfoGenerator do
       MSG
 
       code2 = <<~MSG.chomp
-      class LinkedList
-        class EmptyLinkedList; end
-      end
+        class LinkedList
+          protected
+          def ==(other); end
+
+          class EmptyLinkedList; end
+        end
       MSG
 
       # Execute
@@ -55,8 +58,89 @@ describe UMLInfoGenerator do
       _(uml_info.class_names).must_equal(expected)
     end
 
-    it 'merges the attributes and methods of duplicate classes into a single class' do
-      
+    it 'merges the instance methods of duplicate classes into a single class' do
+     # Setup
+      code1 = <<~MSG.chomp
+        class LinkedList
+          def conj(item); end
+
+          protected
+          def ==(other); end
+
+          private
+          def traverse(index); end
+        end
+      MSG
+
+      code2 = <<~MSG.chomp
+        class LinkedList
+          def splice(index); end
+        end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+
+      # Assert
+      expected_instance_methods = <<~MSG.chomp
+        public conj(item)
+        protected ==(other)
+        private traverse(index)
+        public splice(index)
+      MSG
+      _(uml_info.class_instance_methods).must_equal( [expected_instance_methods] )
+    end
+
+    it 'merges the singleton methods of duplicate classes into a single class' do
+     # Setup
+      code1 = <<~MSG.chomp
+        class LinkedList
+          def self.count; end
+        end
+      MSG
+
+      code2 = <<~MSG.chomp
+        class LinkedList
+          def self.rotate(list); end
+        end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+
+      # Assert
+      expected_singleton_methods = <<~MSG.chomp
+        self.count()
+        self.rotate(list)
+      MSG
+      _(uml_info.class_singleton_methods).must_equal( [expected_singleton_methods] )
+    end
+
+    it 'merges the instance variables of duplicate classes into a single class' do
+     # Setup
+      code1 = <<~MSG.chomp
+        class LinkedList
+          def initialize(previous_node, next_node)
+            @previous_node = previous_node
+            @next_node = next_node
+          end
+        end
+      MSG
+
+      code2 = <<~MSG.chomp
+        class LinkedList
+          def initialize(previous_node, next_node)
+            @size
+          end
+        end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+
+      # Assert
+      expected_instance_variables = [%i[@previous_node @next_node @size]]
+      _(uml_info.class_instance_variables).must_equal(expected_instance_variables)
     end
 
     it 'returns only unique modules' do
