@@ -9,7 +9,7 @@ module UMLInfoGenerator
       uml_infos << process_file(file)
     end
 
-    uml_infos.reduce { |accumulator, uml_info| uml_info.merge(accumulator) }
+    uml_infos.reduce(:merge)
   end
 
   def self.process_multiple_code_snippets(code_snippets)
@@ -17,7 +17,7 @@ module UMLInfoGenerator
       uml_infos << process_code(code)
     end
 
-    uml_infos.reduce { |accumulator, uml_info| uml_info.merge(accumulator) }
+    uml_infos.reduce(:merge)
   end
 
   def self.process_file(file)

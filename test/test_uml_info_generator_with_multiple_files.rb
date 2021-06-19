@@ -143,6 +143,55 @@ describe UMLInfoGenerator do
       _(uml_info.class_instance_variables).must_equal(expected_instance_variables)
     end
 
+    it 'when multiple duplicate classes in a single file' \
+       'it merges instance methods correctly' do
+      # Setup
+      code1 = <<~MSG.chomp
+        class LinkedList
+          def conj(item); end
+
+          protected
+          def ==(other); end
+
+          private
+          def traverse(index); end
+        end
+
+        class LinkedList
+          def rotate; end
+        end
+      MSG
+
+      code2 = <<~MSG.chomp
+        class LinkedList
+          def splice(index); end
+        end
+
+        class LinkedList
+          def to_array(); end
+        end
+
+        class LinkedList
+          def to_symbol(); end
+        end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+
+      # Assert
+      expected_instance_methods = <<~MSG.chomp
+        public conj(item)
+        protected ==(other)
+        private traverse(index)
+        public rotate()
+        public splice(index)
+        public to_array()
+        public to_symbol()
+      MSG
+      _(uml_info.class_instance_methods).must_equal( [expected_instance_methods] )
+    end
+
     it 'returns only unique modules' do
       
     end

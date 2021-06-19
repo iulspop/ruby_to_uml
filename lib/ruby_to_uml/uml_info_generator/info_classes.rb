@@ -70,7 +70,7 @@ module UMLInfoGenerator
     end
 
     def merge(other_uml_info)
-      unique_relationships = (other_uml_info.relationships + relationships).uniq
+      unique_relationships = (relationships + other_uml_info.relationships).uniq
       unique_classes = merge_classes(classes, other_uml_info.classes)
       UMLInfo.new(unique_classes, [], unique_relationships)
     end
@@ -90,24 +90,44 @@ module UMLInfoGenerator
       distinct_classes.each do |class_1|
         next if merged.include?(class_1.name)
 
-        matched_class = nil
-        match = distinct_classes.any? do |class_2|
-          matched_class = class_2
-          class_1.name == class_2.name && class_1.object_id != class_2.object_id
+        matched_classes = []
+        distinct_classes.each do |class_2|
+          if class_1.name == class_2.name && class_1.object_id != class_2.object_id
+            matched_classes << class_2
+          end
         end
 
-        if match
-          uniq_instance_methods = (matched_class.instance_methods_info + class_1.instance_methods_info).uniq
-          uniq_singleton_methods = (matched_class.singleton_methods_info + class_1.singleton_methods_info).uniq
-          uniq_instance_variables = (matched_class.instance_variables_info + class_1.instance_variables_info).uniq
-          unique_classes << ClassInfo.new(class_1.name, uniq_instance_methods, uniq_singleton_methods, uniq_instance_variables)
+        unless matched_classes.empty?
+          unique_classes << merge_class_attributes([class_1, *matched_classes])
           merged << class_1.name
         else
-          unique_classes << class_1
+          unique_classes <<class_1 
         end
       end
 
       unique_classes
+    end
+
+    def merge_class_attributes(classes)
+      getters = [:instance_methods_info, :singleton_methods_info, :instance_variables_info]
+      merge_attributes(classes, getters)
+    end
+
+    def merge_attributes(objects, getters)
+      example_object = objects[0]
+
+      uniq_attributes = []
+      getters.each do |getter|
+        attribute = []
+        objects.each do |object|
+          object.send(getter)
+          attribute << object.send(getter)
+        end
+        uniq_attributes << attribute.flatten.uniq
+      end
+
+      klass = example_object.class
+      klass.new(example_object.name, *uniq_attributes)
     end
   end
 end
