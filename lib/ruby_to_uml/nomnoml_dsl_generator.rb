@@ -31,12 +31,8 @@ module NomnomlDSLGenerator
       class_infos.each_with_object("") do |class_info, dsl_string|
         name = class_info.name
         instance_variables = class_info.instance_variables_info.join("; ")
-        instance_methods = class_info.instance_methods_info.map do |method_info|
-          instance_method_dsl(method_info)
-        end.join("; ")
-        singleton_methods = class_info.singleton_methods_info.map do |method_info|
-          singleton_method_dsl(method_info)
-        end.join("; ")
+        instance_methods = instance_methods_dsl(class_info.instance_methods_info)
+        singleton_methods = singleton_methods_dsl(class_info.singleton_methods_info)
 
         class_dsl = <<~MSG.chomp
           [<class>
@@ -49,6 +45,18 @@ module NomnomlDSLGenerator
 
         dsl_string << class_dsl
       end
+    end
+
+    def instance_methods_dsl(method_infos)
+      method_infos.map do |method_info|
+        instance_method_dsl(method_info)
+      end.join("; ")
+    end
+
+    def singleton_methods_dsl(method_infos)
+      method_infos.map do |method_info|
+        singleton_method_dsl(method_info)
+      end.join("; ")
     end
 
     def instance_method_dsl(method_info)
