@@ -193,11 +193,85 @@ describe UMLInfoGenerator do
     end
 
     it 'returns only unique modules' do
-      
+      # Setup
+      code1 = <<~MSG.chomp
+        module Enumerable; end
+
+        module Rake
+          module TaskRunner; end
+        end
+      MSG
+
+      code2 = <<~MSG.chomp
+        module Math; end
+
+        module Rake
+          module TaskRunner; end
+        end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+
+      # Assert
+      expected = %i[Enumerable Rake TaskRunner Math]
+      _(uml_info.module_names).must_equal(expected)
     end
 
-    it 'merges the methods of duplicate modules into a single module' do
-      
+    it 'merges the instance methods of duplicate modules into a single module' do
+      # Setup
+      code1 = <<~MSG.chomp
+        module Rake
+          def run(task_id); end
+          protected
+          def on?; end
+        end
+      MSG
+
+      code2 = <<~MSG.chomp
+        module Rake
+          private
+          def show_task_output(task_id: nil, terminal_id: nil); end
+        end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+
+      # Assert
+      expected_instance_methods = <<~MSG.chomp
+        public run(task_id)
+        protected on?()
+        private show_task_output(task_id, terminal_id)
+      MSG
+      _(uml_info.module_instance_methods).must_equal([expected_instance_methods])
+    end
+
+    it 'merges the singleton methods of duplicate modules into a single module' do
+      # Setup
+      code1 = <<~MSG.chomp
+        module Math
+          def self.sqrt(number); end
+          def self.pi; end
+        end
+      MSG
+
+      code2 = <<~MSG.chomp
+        module Math
+          def self.to_fixed_point; end
+        end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+
+      # Assert
+      expected_singleton_methods = <<~MSG.chomp
+        self.sqrt(number)
+        self.pi()
+        self.to_fixed_point()
+      MSG
+      _(uml_info.module_singleton_methods).must_equal([expected_singleton_methods])
     end
   end
 
