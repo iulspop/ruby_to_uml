@@ -321,5 +321,30 @@ describe UMLInfoGenerator do
       expected = ["Stack prepends Extras"]
       _(uml_info.relationship_descriptions).must_equal(expected)
     end
+
+    it "handles multiple relationships at once" do
+      # Setup
+      input = <<~MSG.chomp
+      class LinkedList
+        include Enumerable
+        extend Helpers
+        prepend Bonus
+      end
+
+      class EmptyLinkedList < LinkedList; end
+    MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_code(input)
+
+      # Assert
+      expected = [
+        "LinkedList includes Enumerable",
+        "LinkedList extends Helpers",
+        "LinkedList prepends Bonus",
+        "EmptyLinkedList inherits LinkedList"
+      ]
+      _(uml_info.relationship_descriptions).must_equal(expected)
+    end
   end
 end

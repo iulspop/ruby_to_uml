@@ -19,6 +19,14 @@ describe "NomnomlDSLGenerator" do
         def self.make; end
         def self.cons(head, tail); end
       end
+
+      class EmptyLinkedList
+        def initialize
+          @head
+        end
+        def empty?; end
+        def self.cons; end
+      end
     MSG
     uml_info = UMLInfoGenerator.process_code(input)
 
@@ -32,6 +40,12 @@ describe "NomnomlDSLGenerator" do
         @id; @head; @tail |
         +initialize(head, tail); +empty?; +conj(item); #==(other); -traverse(index) |
         self.make; self.cons(head, tail)
+      ]
+      [<class>
+        EmptyLinkedList |
+        @head |
+        +initialize; +empty? |
+        self.cons
       ]
     MSG
     _(dsl.classes).must_equal(expected_class_dsl)
@@ -48,6 +62,11 @@ describe "NomnomlDSLGenerator" do
         def show_task_output(task_id: nil, terminal_id: nil); end
         def self.errors; end
       end
+
+      module Math
+        def add(num); end
+        def self.sqrt(num); end
+      end
     MSG
     uml_info = UMLInfoGenerator.process_code(input)
 
@@ -61,7 +80,38 @@ describe "NomnomlDSLGenerator" do
         +run(task_id); #on?; -show_task_output(task_id, terminal_id) |
         self.errors
       ]
+      [<module>
+        Math |
+        +add(num) |
+        self.sqrt(num)
+      ]
     MSG
     _(dsl.modules).must_equal(expected_module_dsl)
+  end
+
+  it "returns relationships dsl (inheritence, includes, extends, prepends)" do
+    # Setup
+    input = <<~MSG.chomp
+      class LinkedList
+        include Enumerable
+        extend Helpers
+        prepend Bonus
+      end
+
+      class EmptyLinkedList < LinkedList; end
+    MSG
+    uml_info = UMLInfoGenerator.process_code(input)
+
+    # Execute
+    dsl = NomnomlDSLGenerator.generate_dsl(uml_info)
+
+    # Assert
+    expected_relationships_dsl = <<~MSG
+    [LinkedList] includes <- [Enumerable]
+    [LinkedList] extends <- [Helpers]
+    [LinkedList] prepends <- [Bonus]
+    [EmptyLinkedList] inherits <:- [LinkedList]
+    MSG
+    _(dsl.relationships).must_equal(expected_relationships_dsl)
   end
 end

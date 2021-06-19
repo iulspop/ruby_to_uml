@@ -1,8 +1,9 @@
 module NomnomlDSLGenerator
   def self.generate_dsl(uml_info)
     classes = create_class_dsl(uml_info.classes)
-    modules = create_module_dsl(uml_info.modules)
-    NomnomlDSL.new(style, classes, modules)
+    modules = create_modules_dsl(uml_info.modules)
+    relationships = create_relationships_dsl(uml_info.relationships)
+    NomnomlDSL.new(style, classes, modules, relationships)
   end
 
   class << NomnomlDSLGenerator
@@ -48,7 +49,7 @@ module NomnomlDSLGenerator
       end
     end
 
-    def create_module_dsl(module_infos)
+    def create_modules_dsl(module_infos)
       module_infos.each_with_object("") do |module_info, dsl_string|
         name = module_info.name
         instance_methods = instance_methods_dsl(module_info.instance_methods_info)
@@ -63,6 +64,27 @@ module NomnomlDSLGenerator
         MSG
 
         dsl_string << module_dsl
+      end
+    end
+
+    def create_relationships_dsl(relationship_infos)
+      relationship_infos.each_with_object("") do |relationship_info, dsl_string|
+        subject = relationship_info.subject
+        verb = relationship_info.verb
+        object = relationship_info.object
+
+        arrow_dictionary = {
+          inherits: "<:-",
+          includes: "<-",
+          extends: "<-",
+          prepends: "<-"
+        }
+
+        arrow = arrow_dictionary[verb]
+
+        relationship_dsl = "[#{subject}] #{verb} #{arrow} [#{object}]\n"
+
+        dsl_string << relationship_dsl
       end
     end
 
@@ -106,12 +128,3 @@ module NomnomlDSLGenerator
 
   NomnomlDSL = Struct.new(:style, :classes, :modules, :relationships)
 end
-
-expected_class_dsl = <<~MSG.chomp
-  [<class>
-    LinkedList |
-    @id; @head; @tail |
-    +conj(item); +empty?; #==(other); -traverse(index) |
-    self.make(args); self.cons(head, tail)
-  ]
-MSG
