@@ -1,7 +1,7 @@
 require_relative '../lib/ruby_to_uml'
 
 describe UMLInfoGenerator do
-  describe 'when processing multiple code files' do
+  describe 'when processing multiple code snippets' do
     it 'returns only unique relationships (duplicates are removed)' do
       # Setup
       code1 = <<~MSG.chomp
@@ -48,5 +48,24 @@ describe UMLInfoGenerator do
     it 'merges the methods of duplicate modules into a single module' do
       
     end
+  end
+
+  describe 'when processing multiple code files' do
+    it 'handles files correctly' do
+      # Setup
+      paths = ["test/test_uml_info_generator_with_multiple_files"]
+      file_paths = PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_files(file_paths)
+
+      # Assert
+      expected = [
+        "EmptyLinkedList inherits LinkedList",
+        "EmptyLinkedList includes Enumerable",
+        "EmptyLinkedList prepends Extras",
+        "EmptyLinkedList extends Abstract"
+      ]
+      _(uml_info.relationship_descriptions).must_equal(expected)    end
   end
 end
