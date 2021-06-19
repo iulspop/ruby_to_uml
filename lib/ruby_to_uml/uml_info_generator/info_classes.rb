@@ -31,6 +31,8 @@ module UMLInfoGenerator
   end
 
   class UMLInfo
+    attr_reader :classes, :modules, :relationships
+
     def initialize(classes, modules, relationships)
       @classes = classes
       @modules = modules
@@ -75,10 +77,6 @@ module UMLInfoGenerator
       unique_modules = merge_modules(modules, other_uml_info.modules)
       UMLInfo.new(unique_classes, unique_modules, unique_relationships)
     end
-
-    protected
-
-    attr_reader :classes, :modules, :relationships
 
     private
 
