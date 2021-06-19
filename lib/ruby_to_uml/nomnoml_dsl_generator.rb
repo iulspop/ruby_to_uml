@@ -1,7 +1,8 @@
 module NomnomlDSLGenerator
   def self.generate_dsl(uml_info)
     classes = create_class_dsl(uml_info.classes)
-    NomnomlDSL.new(style, classes)
+    modules = create_module_dsl(uml_info.modules)
+    NomnomlDSL.new(style, classes, modules)
   end
 
   class << NomnomlDSLGenerator
@@ -34,7 +35,7 @@ module NomnomlDSLGenerator
         instance_methods = instance_methods_dsl(class_info.instance_methods_info)
         singleton_methods = singleton_methods_dsl(class_info.singleton_methods_info)
 
-        class_dsl = <<~MSG.chomp
+        class_dsl = <<~MSG
           [<class>
             #{name} |
             #{instance_variables} |
@@ -44,6 +45,24 @@ module NomnomlDSLGenerator
         MSG
 
         dsl_string << class_dsl
+      end
+    end
+
+    def create_module_dsl(module_infos)
+      module_infos.each_with_object("") do |module_info, dsl_string|
+        name = module_info.name
+        instance_methods = instance_methods_dsl(module_info.instance_methods_info)
+        singleton_methods = singleton_methods_dsl(module_info.singleton_methods_info)
+
+        module_dsl = <<~MSG
+          [<module>
+            #{name} |
+            #{instance_methods} |
+            #{singleton_methods}
+          ]
+        MSG
+
+        dsl_string << module_dsl
       end
     end
 
