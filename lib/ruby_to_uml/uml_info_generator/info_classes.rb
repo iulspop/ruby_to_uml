@@ -71,7 +71,8 @@ module UMLInfoGenerator
 
     def merge(other_uml_info)
       unique_relationships = (other_uml_info.relationships + relationships).uniq
-      UMLInfo.new([], [], unique_relationships)
+      unique_classes = (other_uml_info.classes + classes).uniq
+      UMLInfo.new(unique_classes, [], unique_relationships)
     end
 
     protected

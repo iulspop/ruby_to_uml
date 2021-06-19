@@ -34,7 +34,25 @@ describe UMLInfoGenerator do
     end
 
     it 'returns only unique classes' do
-      
+     # Setup
+      code1 = <<~MSG.chomp
+        class LinkedList
+          class EmptyLinkedList; end
+        end
+      MSG
+
+      code2 = <<~MSG.chomp
+      class LinkedList
+        class EmptyLinkedList; end
+      end
+      MSG
+
+      # Execute
+      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+
+      # Assert
+      expected = %i[LinkedList EmptyLinkedList]
+      _(uml_info.class_names).must_equal(expected)
     end
 
     it 'merges the attributes and methods of duplicate classes into a single class' do
