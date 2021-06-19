@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagram</title>
+</head>
+<body>
+  <script src="//unpkg.com/graphre/dist/graphre.js"></script>
+  <script src="//unpkg.com/nomnoml/dist/nomnoml.js"></script>
+
+  <canvas id="target-canvas"></canvas>
+  <script>
+      var canvas = document.getElementById('target-canvas');
+      var source = `<%= dsl_string %>`;
+      nomnoml.draw(canvas, source);
+  </script>
+</body>
+</html>

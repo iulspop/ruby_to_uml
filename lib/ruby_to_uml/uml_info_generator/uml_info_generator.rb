@@ -1,4 +1,5 @@
 require 'parser/current'
+
 require_relative "processor_helpers"
 require_relative "ast_processor.rb"
 require_relative "info_classes.rb"
