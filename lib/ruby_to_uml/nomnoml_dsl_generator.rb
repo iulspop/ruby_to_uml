@@ -9,7 +9,7 @@ module NomnomlDSLGenerator
   class << NomnomlDSLGenerator
     private
     def style
-      <<~MSG.chomp
+      <<~MSG
         #zoom: 0.9
 
         #font: Roboto
@@ -126,5 +126,9 @@ module NomnomlDSLGenerator
     end
   end
 
-  NomnomlDSL = Struct.new(:style, :classes, :modules, :relationships)
+  NomnomlDSL = Struct.new(:style, :classes, :modules, :relationships) do
+    def to_s
+      style + classes + modules + relationships
+    end
+  end
 end
