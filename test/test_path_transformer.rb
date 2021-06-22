@@ -57,7 +57,7 @@ end
 
       # Assert
       expected = [
-        'test/test_path_transformer/dummy_folder_3/1.rb'
+        'test/test_path_transformer/dummy_folder_3/1.rb',
       ].map { |file| File.expand_path(file, Dir.pwd)}
       _(result).must_equal(expected)
   end
