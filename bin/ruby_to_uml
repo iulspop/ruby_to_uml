@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/ruby_to_uml.rb'
+
+CLI.start(ARGV)
