@@ -6,6 +6,7 @@ module PathTransformer
          .map { |path| path.file? ? path : resolve_children(path) }
          .flatten
          .map(&:to_s)
+         .filter { |path| path.match?(/.rb$/)}
          .sort
   end
 

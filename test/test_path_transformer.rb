@@ -48,4 +48,17 @@ end
       ].map { |file| File.expand_path(file, Dir.pwd)}
       _(result).must_equal(expected)
    end
+
+  it "when directory contains files other than Ruby files, " \
+     "it returns paths only to files that end in '.rb'" do
+      # Execute
+      paths = ["test/test_path_transformer/dummy_folder_3"]
+      result = PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
+
+      # Assert
+      expected = [
+        'test/test_path_transformer/dummy_folder_3/1.rb'
+      ].map { |file| File.expand_path(file, Dir.pwd)}
+      _(result).must_equal(expected)
+  end
 end
