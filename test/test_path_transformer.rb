@@ -1,11 +1,11 @@
 require_relative '../lib/ruby_to_uml'
 
-describe 'PathTransformer' do
+describe 'RubyToUML::PathTransformer' do
   it 'when given path to directory relative to the working directory, ' \
      'it returns absolute path for every file in a directory and its nested directories' do
     # Execute
     paths = ['test/test_path_transformer/dummy_folder']
-    result = PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
+    result = RubyToUML::PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
 
     # Assert
     expected = [
@@ -19,7 +19,7 @@ describe 'PathTransformer' do
   'it returns absolute path for every file in a directory and its nested directories' do
     # Execute
     paths = ['./test/test_path_transformer/dummy_folder']
-    result = PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
+    result = RubyToUML::PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
 
     # Assert
     expected = [
@@ -37,7 +37,7 @@ describe 'PathTransformer' do
       'test/test_path_transformer/dummy_folder_2',
       'test/test_path_transformer/4.rb'
     ]
-    result = PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
+    result = RubyToUML::PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
 
     # Assert
     expected = [
@@ -53,7 +53,7 @@ describe 'PathTransformer' do
      "it returns paths only to files that end in '.rb'" do
     # Execute
     paths = ['test/test_path_transformer/dummy_folder_3']
-    result = PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
+    result = RubyToUML::PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
 
     # Assert
     expected = [

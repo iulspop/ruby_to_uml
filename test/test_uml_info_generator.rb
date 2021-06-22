@@ -1,6 +1,6 @@
 require_relative '../lib/ruby_to_uml'
 
-describe UMLInfoGenerator do
+describe RubyToUML::UMLInfoGenerator do
   describe 'class info' do
     it 'returns name of every class' do
       # Setup
@@ -17,7 +17,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = %i[Stack LinkedList EmptyLinkedList]
@@ -38,7 +38,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       instance_methods = <<~MSG.chomp
@@ -65,7 +65,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       singleton_methods = <<~MSG.chomp
@@ -88,7 +88,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = ['public yellow(iron)']
@@ -106,7 +106,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = ['self.yellow(iron)']
@@ -131,7 +131,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = [%i[@family @name @age]]
@@ -149,7 +149,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = [%i[@name]]
@@ -169,7 +169,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = %i[Enumerable Rake TaskRunner]
@@ -189,7 +189,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       instance_methods = <<~MSG.chomp
@@ -213,7 +213,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       singleton_methods = <<~MSG.chomp
@@ -234,7 +234,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = ['public run(task_id)']
@@ -250,7 +250,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = ['self.sqrt(number)']
@@ -267,7 +267,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = ['EmptyLinkedList inherits LinkedList', 'Stack inherits Heap']
@@ -283,7 +283,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = ['LinkedList includes Enumerable']
@@ -299,7 +299,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = ['LinkedList extends Utils']
@@ -315,7 +315,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = ['Stack prepends Extras']
@@ -335,7 +335,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_code(input)
+      uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = [

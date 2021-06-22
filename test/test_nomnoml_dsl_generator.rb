@@ -1,6 +1,6 @@
 require_relative '../lib/ruby_to_uml'
 
-describe 'NomnomlDSLGenerator' do
+describe 'RubyToUML::NomnomlDSLGenerator' do
   it 'returns classes formated with name, instance variables, instance methods and singleton methods' do
     # Setup
     input = <<~MSG.chomp
@@ -28,10 +28,10 @@ describe 'NomnomlDSLGenerator' do
         def self.cons; end
       end
     MSG
-    uml_info = UMLInfoGenerator.process_code(input)
+    uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
     # Execute
-    dsl = NomnomlDSLGenerator.generate_dsl(uml_info)
+    dsl = RubyToUML::NomnomlDSLGenerator.generate_dsl(uml_info)
 
     # Assert
     expected_class_dsl = <<~MSG
@@ -66,10 +66,10 @@ describe 'NomnomlDSLGenerator' do
         def self.sqrt(num); end
       end
     MSG
-    uml_info = UMLInfoGenerator.process_code(input)
+    uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
     # Execute
-    dsl = NomnomlDSLGenerator.generate_dsl(uml_info)
+    dsl = RubyToUML::NomnomlDSLGenerator.generate_dsl(uml_info)
 
     # Assert
     expected_module_dsl = <<~MSG
@@ -96,10 +96,10 @@ describe 'NomnomlDSLGenerator' do
 
       class EmptyLinkedList < LinkedList; end
     MSG
-    uml_info = UMLInfoGenerator.process_code(input)
+    uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
     # Execute
-    dsl = NomnomlDSLGenerator.generate_dsl(uml_info)
+    dsl = RubyToUML::NomnomlDSLGenerator.generate_dsl(uml_info)
 
     # Assert
     expected_relationships_dsl = <<~MSG
@@ -124,10 +124,10 @@ describe 'NomnomlDSLGenerator' do
         def self.[]; end
       end
     MSG
-    uml_info = UMLInfoGenerator.process_code(input)
+    uml_info = RubyToUML::UMLInfoGenerator.process_code(input)
 
     # Execute
-    dsl = NomnomlDSLGenerator.generate_dsl(uml_info)
+    dsl = RubyToUML::NomnomlDSLGenerator.generate_dsl(uml_info)
 
     # Assert
     expected_class_dsl = '[<class> LinkedList |

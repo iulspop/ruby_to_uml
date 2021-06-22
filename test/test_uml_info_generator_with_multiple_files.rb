@@ -1,6 +1,6 @@
 require_relative '../lib/ruby_to_uml'
 
-describe UMLInfoGenerator do
+describe RubyToUML::UMLInfoGenerator do
   describe 'when processing multiple code snippets' do
     it 'returns only unique relationships (duplicates are removed)' do
       # Setup
@@ -21,7 +21,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+      uml_info = RubyToUML::UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
 
       # Assert
       expected = [
@@ -51,7 +51,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+      uml_info = RubyToUML::UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
 
       # Assert
       expected = %i[LinkedList EmptyLinkedList]
@@ -79,7 +79,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+      uml_info = RubyToUML::UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
 
       # Assert
       expected_instance_methods = <<~MSG.chomp
@@ -106,7 +106,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+      uml_info = RubyToUML::UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
 
       # Assert
       expected_singleton_methods = <<~MSG.chomp
@@ -136,7 +136,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+      uml_info = RubyToUML::UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
 
       # Assert
       expected_instance_variables = [%i[@previous_node @next_node @size]]
@@ -177,7 +177,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+      uml_info = RubyToUML::UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
 
       # Assert
       expected_instance_methods = <<~MSG.chomp
@@ -211,7 +211,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+      uml_info = RubyToUML::UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
 
       # Assert
       expected = %i[Enumerable Rake TaskRunner Math]
@@ -236,7 +236,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+      uml_info = RubyToUML::UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
 
       # Assert
       expected_instance_methods = <<~MSG.chomp
@@ -263,7 +263,7 @@ describe UMLInfoGenerator do
       MSG
 
       # Execute
-      uml_info = UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
+      uml_info = RubyToUML::UMLInfoGenerator.process_multiple_code_snippets([code1, code2])
 
       # Assert
       expected_singleton_methods = <<~MSG.chomp
@@ -279,10 +279,10 @@ describe UMLInfoGenerator do
     it 'handles files correctly' do
       # Setup
       paths = ['test/test_uml_info_generator_with_multiple_files']
-      file_paths = PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
+      file_paths = RubyToUML::PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
 
       # Execute
-      uml_info = UMLInfoGenerator.process_files(file_paths)
+      uml_info = RubyToUML::UMLInfoGenerator.process_files(file_paths)
 
       # Assert
       expected = [
