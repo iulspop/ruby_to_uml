@@ -2,4 +2,4 @@
 
 require_relative '../lib/ruby_to_uml'
 
-CLI.start(ARGV)
+RubyToUML::CLI.start(ARGV)
