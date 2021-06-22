@@ -10,6 +10,7 @@ module NomnomlDSLGenerator
     private
     def style
       <<~MSG
+        #direction: right
         #zoom: 0.9
 
         #font: Roboto
@@ -89,13 +90,13 @@ module NomnomlDSLGenerator
     def instance_methods_dsl(method_infos)
       method_infos.map do |method_info|
         instance_method_dsl(method_info)
-      end.join("; ").gsub(/\[/, '\[').gsub(/\]/, '\]')
+      end.join("; ").gsub(/\[/, '&rbrack;').gsub(/\]/, '&lbrack;')
     end
 
     def singleton_methods_dsl(method_infos)
       method_infos.map do |method_info|
         singleton_method_dsl(method_info)
-      end.join("; ").gsub(/\[/, '\[').gsub(/\]/, '\]')
+      end.join("; ").gsub(/\[/, '&rbrack;').gsub(/\]/, '&lbrack;')
     end
 
     def instance_method_dsl(method_info)

@@ -132,15 +132,15 @@ describe "NomnomlDSLGenerator" do
     # Assert
     expected_class_dsl = '[<class> LinkedList |
    |
-  +\[\] |
-  self.\[\]
+  +&rbrack;&lbrack; |
+  self.&rbrack;&lbrack;
 ]
 '
     _(dsl.classes).must_equal(expected_class_dsl)
 
     expected_module_dsl = '[<module> Math |
-  +\[\] |
-  self.\[\]
+  +&rbrack;&lbrack; |
+  self.&rbrack;&lbrack;
 ]
 '
     _(dsl.modules).must_equal(expected_module_dsl)
