@@ -37,8 +37,7 @@ module NomnomlDSLGenerator
         singleton_methods = singleton_methods_dsl(class_info.singleton_methods_info)
 
         class_dsl = <<~MSG
-          [<class>
-            #{name} |
+          [<class> #{name} |
             #{instance_variables} |
             #{instance_methods} |
             #{singleton_methods}
@@ -56,8 +55,7 @@ module NomnomlDSLGenerator
         singleton_methods = singleton_methods_dsl(module_info.singleton_methods_info)
 
         module_dsl = <<~MSG
-          [<module>
-            #{name} |
+          [<module> #{name} |
             #{instance_methods} |
             #{singleton_methods}
           ]

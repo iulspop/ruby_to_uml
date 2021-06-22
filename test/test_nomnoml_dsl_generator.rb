@@ -35,14 +35,12 @@ describe "NomnomlDSLGenerator" do
 
     # Assert
     expected_class_dsl = <<~MSG
-      [<class>
-        LinkedList |
+      [<class> LinkedList |
         @id; @head; @tail |
         +initialize(head, tail); +empty?; +conj(item); #==(other); -traverse(index) |
         self.make; self.cons(head, tail)
       ]
-      [<class>
-        EmptyLinkedList |
+      [<class> EmptyLinkedList |
         @head |
         +initialize; +empty? |
         self.cons
@@ -75,13 +73,11 @@ describe "NomnomlDSLGenerator" do
 
     # Assert
     expected_module_dsl = <<~MSG
-      [<module>
-        Rake |
+      [<module> Rake |
         +run(task_id); #on?; -show_task_output(task_id, terminal_id) |
         self.errors
       ]
-      [<module>
-        Math |
+      [<module> Math |
         +add(num) |
         self.sqrt(num)
       ]
