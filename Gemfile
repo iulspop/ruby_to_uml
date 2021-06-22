@@ -1,10 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '3.0.1'
-
-gem 'erb'
-gem 'parser'
-gem 'tilt'
+gemspec
 
 group :development do
   gem 'guard'

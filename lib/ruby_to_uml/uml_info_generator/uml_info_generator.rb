@@ -1,8 +1,8 @@
 require 'parser/current'
 
-require_relative 'processor_helpers'
-require_relative 'ast_processor'
-require_relative 'info_classes'
+require 'ruby_to_uml/uml_info_generator/processor_helpers'
+require 'ruby_to_uml/uml_info_generator/ast_processor'
+require 'ruby_to_uml/uml_info_generator/info_classes'
 
 module RubyToUML
   module UMLInfoGenerator

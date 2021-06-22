@@ -1,4 +1,4 @@
-require_relative '../lib/ruby_to_uml'
+require 'ruby_to_uml'
 
 describe 'RubyToUML::PathTransformer' do
   it 'when given path to directory relative to the working directory, ' \

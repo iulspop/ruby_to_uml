@@ -1,4 +1,4 @@
-require_relative '../lib/ruby_to_uml'
+require 'ruby_to_uml'
 
 describe 'RubyToUML::NomnomlDSLGenerator' do
   it 'returns classes formated with name, instance variables, instance methods and singleton methods' do

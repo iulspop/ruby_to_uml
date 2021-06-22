@@ -1,4 +1,4 @@
-require_relative '../lib/ruby_to_uml'
+require 'ruby_to_uml'
 
 describe 'RubyToUML::UMLDiagramRenderer' do
   it 'renders and saves an html file from a template' do
