@@ -10,7 +10,8 @@ module UMLDiagramRenderer
   class << UMLDiagramRenderer
     private
     def render_diagram(dsl_string)
-      template = Tilt.new('lib/ruby_to_uml/uml_diagram_renderer/uml_diagram_template.erb')
+      absolute_path = File.expand_path('../uml_diagram_template.erb', __FILE__)
+      template = Tilt.new(absolute_path)
       template.render(Object.new, dsl_string: dsl_string)
     end
   
