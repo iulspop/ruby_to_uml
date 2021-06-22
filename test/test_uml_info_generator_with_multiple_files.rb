@@ -25,16 +25,16 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = [
-        "EmptyLinkedList inherits LinkedList",
-        "EmptyLinkedList includes Enumerable",
-        "EmptyLinkedList prepends Extras",
-        "EmptyLinkedList extends Abstract"
+        'EmptyLinkedList inherits LinkedList',
+        'EmptyLinkedList includes Enumerable',
+        'EmptyLinkedList prepends Extras',
+        'EmptyLinkedList extends Abstract'
       ]
       _(uml_info.relationship_descriptions).must_equal(expected)
     end
 
     it 'returns only unique classes' do
-     # Setup
+      # Setup
       code1 = <<~MSG.chomp
         class LinkedList
           class EmptyLinkedList; end
@@ -59,7 +59,7 @@ describe UMLInfoGenerator do
     end
 
     it 'merges the instance methods of duplicate classes into a single class' do
-     # Setup
+      # Setup
       code1 = <<~MSG.chomp
         class LinkedList
           def conj(item); end
@@ -88,11 +88,11 @@ describe UMLInfoGenerator do
         private traverse(index)
         public splice(index)
       MSG
-      _(uml_info.class_instance_methods).must_equal( [expected_instance_methods] )
+      _(uml_info.class_instance_methods).must_equal([expected_instance_methods])
     end
 
     it 'merges the singleton methods of duplicate classes into a single class' do
-     # Setup
+      # Setup
       code1 = <<~MSG.chomp
         class LinkedList
           def self.count; end
@@ -113,11 +113,11 @@ describe UMLInfoGenerator do
         self.count()
         self.rotate(list)
       MSG
-      _(uml_info.class_singleton_methods).must_equal( [expected_singleton_methods] )
+      _(uml_info.class_singleton_methods).must_equal([expected_singleton_methods])
     end
 
     it 'merges the instance variables of duplicate classes into a single class' do
-     # Setup
+      # Setup
       code1 = <<~MSG.chomp
         class LinkedList
           def initialize(previous_node, next_node)
@@ -189,7 +189,7 @@ describe UMLInfoGenerator do
         public to_array()
         public to_symbol()
       MSG
-      _(uml_info.class_instance_methods).must_equal( [expected_instance_methods] )
+      _(uml_info.class_instance_methods).must_equal([expected_instance_methods])
     end
 
     it 'returns only unique modules' do
@@ -278,7 +278,7 @@ describe UMLInfoGenerator do
   describe 'when processing multiple code files' do
     it 'handles files correctly' do
       # Setup
-      paths = ["test/test_uml_info_generator_with_multiple_files"]
+      paths = ['test/test_uml_info_generator_with_multiple_files']
       file_paths = PathTransformer.transform_files_and_or_directories_paths_to_file_paths(paths)
 
       # Execute
@@ -286,11 +286,12 @@ describe UMLInfoGenerator do
 
       # Assert
       expected = [
-        "EmptyLinkedList inherits LinkedList",
-        "EmptyLinkedList includes Enumerable",
-        "EmptyLinkedList prepends Extras",
-        "EmptyLinkedList extends Abstract"
+        'EmptyLinkedList inherits LinkedList',
+        'EmptyLinkedList includes Enumerable',
+        'EmptyLinkedList prepends Extras',
+        'EmptyLinkedList extends Abstract'
       ]
-      _(uml_info.relationship_descriptions).must_equal(expected)    end
+      _(uml_info.relationship_descriptions).must_equal(expected)
+    end
   end
 end

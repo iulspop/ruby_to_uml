@@ -6,12 +6,13 @@ module PathTransformer
          .map { |path| path.file? ? path : resolve_children(path) }
          .flatten
          .map(&:to_s)
-         .filter { |path| path.match?(/\.rb$/)}
+         .filter { |path| path.match?(/\.rb$/) }
          .sort
   end
 
   class << PathTransformer
     private
+
     def resolve_absolute_path(path)
       Pathname.new(File.expand_path(path, Dir.pwd))
     end

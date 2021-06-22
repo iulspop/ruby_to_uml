@@ -9,7 +9,7 @@ module UMLInfoGenerator
   ModuleInfo = Struct.new(
     :name,
     :instance_methods_info,
-    :singleton_methods_info,
+    :singleton_methods_info
   )
 
   RelationshipInfo = Struct.new(:subject, :object, :verb) do
@@ -64,7 +64,7 @@ module UMLInfoGenerator
     end
 
     def class_instance_variables
-      classes.map { |class_info| class_info.instance_variables_info }
+      classes.map(&:instance_variables_info)
     end
 
     def relationship_descriptions
@@ -99,16 +99,14 @@ module UMLInfoGenerator
 
         matched_entities = []
         distinct_entities.each do |entity_2|
-          if entity_1.name == entity_2.name && entity_1.object_id != entity_2.object_id
-            matched_entities << entity_2
-          end
+          matched_entities << entity_2 if entity_1.name == entity_2.name && entity_1.object_id != entity_2.object_id
         end
 
-        unless matched_entities.empty?
+        if matched_entities.empty?
+          unique_entities << entity_1
+        else
           unique_entities << merge_attributes.call([entity_1, *matched_entities])
           merged << entity_1.name
-        else
-          unique_entities << entity_1
         end
       end
 
@@ -116,16 +114,16 @@ module UMLInfoGenerator
     end
 
     def merge_class_attributes(classes)
-      getters = [:instance_methods_info, :singleton_methods_info, :instance_variables_info]
+      getters = %i[instance_methods_info singleton_methods_info instance_variables_info]
       merge_attributes(classes, getters)
     end
 
     def merge_module_attributes(classes)
-      getters = [:instance_methods_info, :singleton_methods_info]
+      getters = %i[instance_methods_info singleton_methods_info]
       merge_attributes(classes, getters)
     end
 
-    def merge_attributes(objects, getters)
+    def merge_attributes(_objects, getters)
       lambda do |objects|
         example_object = objects[0]
 

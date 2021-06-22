@@ -1,7 +1,7 @@
 require_relative '../lib/ruby_to_uml'
 
-describe "NomnomlDSLGenerator" do
-  it "returns classes formated with name, instance variables, instance methods and singleton methods" do
+describe 'NomnomlDSLGenerator' do
+  it 'returns classes formated with name, instance variables, instance methods and singleton methods' do
     # Setup
     input = <<~MSG.chomp
       class LinkedList
@@ -49,7 +49,7 @@ describe "NomnomlDSLGenerator" do
     _(dsl.classes).must_equal(expected_class_dsl)
   end
 
-  it "returns modules formated with name, instance methods and singleton methods" do
+  it 'returns modules formated with name, instance methods and singleton methods' do
     # Setup
     input = <<~MSG.chomp
       module Rake
@@ -85,7 +85,7 @@ describe "NomnomlDSLGenerator" do
     _(dsl.modules).must_equal(expected_module_dsl)
   end
 
-  it "returns relationships dsl (inheritence, includes, extends, prepends)" do
+  it 'returns relationships dsl (inheritence, includes, extends, prepends)' do
     # Setup
     input = <<~MSG.chomp
       class LinkedList
@@ -103,15 +103,15 @@ describe "NomnomlDSLGenerator" do
 
     # Assert
     expected_relationships_dsl = <<~MSG
-    [LinkedList] includes <- [Enumerable]
-    [LinkedList] extends <- [Helpers]
-    [LinkedList] prepends <- [Bonus]
-    [EmptyLinkedList] inherits <:- [LinkedList]
+      [LinkedList] includes <- [Enumerable]
+      [LinkedList] extends <- [Helpers]
+      [LinkedList] prepends <- [Bonus]
+      [EmptyLinkedList] inherits <:- [LinkedList]
     MSG
     _(dsl.relationships).must_equal(expected_relationships_dsl)
   end
 
-  it "escapes square brackets from instance methods and singleton methods" do
+  it 'escapes square brackets from instance methods and singleton methods' do
     # Setup
     input = <<~MSG.chomp
       class LinkedList

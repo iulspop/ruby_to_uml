@@ -20,11 +20,12 @@ module UMLInfoGenerator
     def get_instance_methods_closure
       type = :public
       lambda do |node, instance_methods_info|
-        if node.type == :def
+        case node.type
+        when :def
           method_name = get_method_name(node)
           args        = get_instance_method_args(node)
           instance_methods_info << InstanceMethodInfo.new(method_name, type, args)
-        elsif node.type == :send
+        when :send
           method_name = get_send_method(node)
           new_type    = get_method_type_change(method_name)
           type = new_type if new_type
@@ -65,8 +66,8 @@ module UMLInfoGenerator
       lambda do |node|
         if node.type == :send
           _, method, module_name = *node
-          if [:include, :extend, :prepend].include? method
-            verb = (method.to_s + "s").to_sym
+          if %i[include extend prepend].include? method
+            verb = "#{method}s".to_sym
             add_module_relationship(class_name, module_name, verb)
           end
         end
@@ -99,7 +100,7 @@ module UMLInfoGenerator
     end
 
     def get_method_type_change(method_name)
-      [:public, :private, :protected].include?(method_name) ? method_name : nil
+      %i[public private protected].include?(method_name) ? method_name : nil
     end
 
     def get_singleton_method_name(defs_node)
@@ -114,6 +115,7 @@ module UMLInfoGenerator
 
     def get_arguments(node)
       return [] if node.children.nil?
+
       node.children.each_with_object([]) { |node, args| args << node.children[0] }
     end
 
@@ -128,7 +130,7 @@ module UMLInfoGenerator
     end
 
     def get_module_name(node)
-      constant, _ = *node
+      constant, = *node
       get_constant_name(constant)
     end
 

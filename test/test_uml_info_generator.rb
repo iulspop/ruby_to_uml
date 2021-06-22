@@ -2,7 +2,7 @@ require_relative '../lib/ruby_to_uml'
 
 describe UMLInfoGenerator do
   describe 'class info' do
-    it "returns name of every class" do
+    it 'returns name of every class' do
       # Setup
       input = <<~MSG.chomp
         class Stack
@@ -24,7 +24,7 @@ describe UMLInfoGenerator do
       _(uml_info.class_names).must_equal(expected)
     end
 
-    it "returns instance methods with correct type and arguments" do
+    it 'returns instance methods with correct type and arguments' do
       # Setup
       input = <<~MSG.chomp
         class LinkedList
@@ -36,10 +36,10 @@ describe UMLInfoGenerator do
           def traverse(index); end
         end
       MSG
-  
+
       # Execute
       uml_info = UMLInfoGenerator.process_code(input)
-  
+
       # Assert
       instance_methods = <<~MSG.chomp
         public conj(item)
@@ -51,7 +51,7 @@ describe UMLInfoGenerator do
       _(uml_info.class_instance_methods).must_equal(expected)
     end
 
-    it "returns singleton methods with arguments and without type" do
+    it 'returns singleton methods with arguments and without type' do
       # Setup
       input = <<~MSG.chomp
         class LinkedList
@@ -63,10 +63,10 @@ describe UMLInfoGenerator do
           def self.traverse(index); end
         end
       MSG
-  
+
       # Execute
       uml_info = UMLInfoGenerator.process_code(input)
-  
+
       # Assert
       singleton_methods = <<~MSG.chomp
         self.conj(item)
@@ -77,7 +77,7 @@ describe UMLInfoGenerator do
       _(uml_info.class_singleton_methods).must_equal(expected)
     end
 
-    it "returns instance methods even when class body has a single node" do
+    it 'returns instance methods even when class body has a single node' do
       # Setup
       input = <<~MSG.chomp
         class Turtle
@@ -91,11 +91,11 @@ describe UMLInfoGenerator do
       uml_info = UMLInfoGenerator.process_code(input)
 
       # Assert
-      expected = ["public yellow(iron)"]
+      expected = ['public yellow(iron)']
       _(uml_info.class_instance_methods).must_equal(expected)
     end
 
-    it "returns singleton methods even when class body has a single node" do
+    it 'returns singleton methods even when class body has a single node' do
       # Setup
       input = <<~MSG.chomp
         class Turtle
@@ -109,11 +109,11 @@ describe UMLInfoGenerator do
       uml_info = UMLInfoGenerator.process_code(input)
 
       # Assert
-      expected = ["self.yellow(iron)"]
+      expected = ['self.yellow(iron)']
       _(uml_info.class_singleton_methods).must_equal(expected)
     end
 
-    it "returns instance variables defined in the initialize method body" do
+    it 'returns instance variables defined in the initialize method body' do
       # Setup
       input = <<~MSG.chomp
         class Animal
@@ -138,7 +138,7 @@ describe UMLInfoGenerator do
       _(uml_info.class_instance_variables).must_equal(expected)
     end
 
-    it "returns instance variables even if initialize method has one node" do
+    it 'returns instance variables even if initialize method has one node' do
       # Setup
       input = <<~MSG.chomp
         class Animal
@@ -158,7 +158,7 @@ describe UMLInfoGenerator do
   end
 
   describe 'module info' do
-    it "returns name of every module" do
+    it 'returns name of every module' do
       # Setup
       input = <<~MSG.chomp
         module Enumerable; end
@@ -176,7 +176,7 @@ describe UMLInfoGenerator do
       _(uml_info.module_names).must_equal(expected)
     end
 
-    it "returns instance methods with correct type and arguments" do
+    it 'returns instance methods with correct type and arguments' do
       # Setup
       input = <<~MSG.chomp
         module Rake
@@ -187,10 +187,10 @@ describe UMLInfoGenerator do
           def show_task_output(task_id: nil, terminal_id: nil); end
         end
       MSG
-  
+
       # Execute
       uml_info = UMLInfoGenerator.process_code(input)
-  
+
       # Assert
       instance_methods = <<~MSG.chomp
         public run(task_id)
@@ -201,7 +201,7 @@ describe UMLInfoGenerator do
       _(uml_info.module_instance_methods).must_equal(expected)
     end
 
-    it "returns singleton methods with arguments and without type" do
+    it 'returns singleton methods with arguments and without type' do
       # Setup
       input = <<~MSG.chomp
         module Math
@@ -211,10 +211,10 @@ describe UMLInfoGenerator do
           def self.to_fixed_point; end
         end
       MSG
-  
+
       # Execute
       uml_info = UMLInfoGenerator.process_code(input)
-  
+
       # Assert
       singleton_methods = <<~MSG.chomp
         self.sqrt(number)
@@ -225,7 +225,7 @@ describe UMLInfoGenerator do
       _(uml_info.module_singleton_methods).must_equal(expected)
     end
 
-    it "returns instance methods even when class body has a single node" do
+    it 'returns instance methods even when class body has a single node' do
       # Setup
       input = <<~MSG.chomp
         module Rake
@@ -237,11 +237,11 @@ describe UMLInfoGenerator do
       uml_info = UMLInfoGenerator.process_code(input)
 
       # Assert
-      expected = ["public run(task_id)"]
+      expected = ['public run(task_id)']
       _(uml_info.module_instance_methods).must_equal(expected)
     end
 
-    it "returns singleton methods even when class body has a single node" do
+    it 'returns singleton methods even when class body has a single node' do
       # Setup
       input = <<~MSG.chomp
         module Math
@@ -253,13 +253,13 @@ describe UMLInfoGenerator do
       uml_info = UMLInfoGenerator.process_code(input)
 
       # Assert
-      expected = ["self.sqrt(number)"]
+      expected = ['self.sqrt(number)']
       _(uml_info.module_singleton_methods).must_equal(expected)
     end
   end
 
   describe 'relationships info' do
-    it "returns inheritence relationships" do
+    it 'returns inheritence relationships' do
       input = <<~MSG.chomp
         class EmptyLinkedList < LinkedList
           class Stack < Heap; end
@@ -270,11 +270,11 @@ describe UMLInfoGenerator do
       uml_info = UMLInfoGenerator.process_code(input)
 
       # Assert
-      expected = ["EmptyLinkedList inherits LinkedList", "Stack inherits Heap"]
+      expected = ['EmptyLinkedList inherits LinkedList', 'Stack inherits Heap']
       _(uml_info.relationship_descriptions).must_equal(expected)
     end
 
-    it "returns include relationships" do
+    it 'returns include relationships' do
       # Setup
       input = <<~MSG.chomp
         class LinkedList
@@ -286,11 +286,11 @@ describe UMLInfoGenerator do
       uml_info = UMLInfoGenerator.process_code(input)
 
       # Assert
-      expected = ["LinkedList includes Enumerable"]
+      expected = ['LinkedList includes Enumerable']
       _(uml_info.relationship_descriptions).must_equal(expected)
     end
 
-    it "returns extend relationships" do
+    it 'returns extend relationships' do
       # Setup
       input = <<~MSG.chomp
         class LinkedList
@@ -302,11 +302,11 @@ describe UMLInfoGenerator do
       uml_info = UMLInfoGenerator.process_code(input)
 
       # Assert
-      expected = ["LinkedList extends Utils"]
+      expected = ['LinkedList extends Utils']
       _(uml_info.relationship_descriptions).must_equal(expected)
     end
 
-    it "returns prepend relationships" do
+    it 'returns prepend relationships' do
       # Setup
       input = <<~MSG.chomp
         class Stack
@@ -318,31 +318,31 @@ describe UMLInfoGenerator do
       uml_info = UMLInfoGenerator.process_code(input)
 
       # Assert
-      expected = ["Stack prepends Extras"]
+      expected = ['Stack prepends Extras']
       _(uml_info.relationship_descriptions).must_equal(expected)
     end
 
-    it "handles multiple relationships at once" do
+    it 'handles multiple relationships at once' do
       # Setup
       input = <<~MSG.chomp
-      class LinkedList
-        include Enumerable
-        extend Helpers
-        prepend Bonus
-      end
+        class LinkedList
+          include Enumerable
+          extend Helpers
+          prepend Bonus
+        end
 
-      class EmptyLinkedList < LinkedList; end
-    MSG
+        class EmptyLinkedList < LinkedList; end
+      MSG
 
       # Execute
       uml_info = UMLInfoGenerator.process_code(input)
 
       # Assert
       expected = [
-        "LinkedList includes Enumerable",
-        "LinkedList extends Helpers",
-        "LinkedList prepends Bonus",
-        "EmptyLinkedList inherits LinkedList"
+        'LinkedList includes Enumerable',
+        'LinkedList extends Helpers',
+        'LinkedList prepends Bonus',
+        'EmptyLinkedList inherits LinkedList'
       ]
       _(uml_info.relationship_descriptions).must_equal(expected)
     end

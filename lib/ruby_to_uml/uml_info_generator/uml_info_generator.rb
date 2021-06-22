@@ -1,8 +1,8 @@
 require 'parser/current'
 
-require_relative "processor_helpers"
-require_relative "ast_processor.rb"
-require_relative "info_classes.rb"
+require_relative 'processor_helpers'
+require_relative 'ast_processor'
+require_relative 'info_classes'
 
 module UMLInfoGenerator
   def self.process_files(file_paths)

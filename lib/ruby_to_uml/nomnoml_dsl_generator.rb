@@ -8,6 +8,7 @@ module NomnomlDSLGenerator
 
   class << NomnomlDSLGenerator
     private
+
     def style
       <<~MSG
         #direction: right
@@ -31,9 +32,9 @@ module NomnomlDSLGenerator
     end
 
     def create_class_dsl(class_infos)
-      class_infos.each_with_object("") do |class_info, dsl_string|
+      class_infos.each_with_object('') do |class_info, dsl_string|
         name = class_info.name
-        instance_variables = class_info.instance_variables_info.join("; ")
+        instance_variables = class_info.instance_variables_info.join('; ')
         instance_methods = instance_methods_dsl(class_info.instance_methods_info)
         singleton_methods = singleton_methods_dsl(class_info.singleton_methods_info)
 
@@ -50,7 +51,7 @@ module NomnomlDSLGenerator
     end
 
     def create_modules_dsl(module_infos)
-      module_infos.each_with_object("") do |module_info, dsl_string|
+      module_infos.each_with_object('') do |module_info, dsl_string|
         name = module_info.name
         instance_methods = instance_methods_dsl(module_info.instance_methods_info)
         singleton_methods = singleton_methods_dsl(module_info.singleton_methods_info)
@@ -67,16 +68,16 @@ module NomnomlDSLGenerator
     end
 
     def create_relationships_dsl(relationship_infos)
-      relationship_infos.each_with_object("") do |relationship_info, dsl_string|
+      relationship_infos.each_with_object('') do |relationship_info, dsl_string|
         subject = relationship_info.subject
         verb = relationship_info.verb
         object = relationship_info.object
 
         arrow_dictionary = {
-          inherits: "<:-",
-          includes: "<-",
-          extends: "<-",
-          prepends: "<-"
+          inherits: '<:-',
+          includes: '<-',
+          extends: '<-',
+          prepends: '<-'
         }
 
         arrow = arrow_dictionary[verb]
@@ -90,27 +91,27 @@ module NomnomlDSLGenerator
     def instance_methods_dsl(method_infos)
       method_infos.map do |method_info|
         instance_method_dsl(method_info)
-      end.join("; ").gsub(/\[/, '&rbrack;').gsub(/\]/, '&lbrack;')
+      end.join('; ').gsub(/\[/, '&rbrack;').gsub(/\]/, '&lbrack;')
     end
 
     def singleton_methods_dsl(method_infos)
       method_infos.map do |method_info|
         singleton_method_dsl(method_info)
-      end.join("; ").gsub(/\[/, '&rbrack;').gsub(/\]/, '&lbrack;')
+      end.join('; ').gsub(/\[/, '&rbrack;').gsub(/\]/, '&lbrack;')
     end
 
     def instance_method_dsl(method_info)
       type_dictionary = {
-        public: "+",
-        protected: "#",
-        private: "-"
+        public: '+',
+        protected: '#',
+        private: '-'
       }
 
       type = type_dictionary[method_info.type]
       name = method_info.name
       arguments = method_info.parameters
 
-      arguments.empty? ? arguments = '' : arguments = "(#{arguments.join(", ")})"
+      arguments = arguments.empty? ? '' : "(#{arguments.join(', ')})"
 
       "#{type}#{name}#{arguments}"
     end
@@ -119,7 +120,7 @@ module NomnomlDSLGenerator
       name = method_info.name
       arguments = method_info.parameters
 
-      arguments.empty? ? arguments = '' : arguments = "(#{arguments.join(", ")})"
+      arguments = arguments.empty? ? '' : "(#{arguments.join(', ')})"
 
       "self.#{name}#{arguments}"
     end

@@ -1,0 +1,23 @@
+require: rubocop-minitest
+require: rubocop-rake
+
+AllCops:
+  NewCops: enable
+
+Layout/LineLength:
+  Max: 120
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Lint/MissingSuper:
+  Enabled: false
+
+Lint/EmptyFile:
+  Enabled: false
+
+Lint/ShadowingOuterLocalVariable:
+  Enabled: false
