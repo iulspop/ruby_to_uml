@@ -110,4 +110,39 @@ describe "NomnomlDSLGenerator" do
     MSG
     _(dsl.relationships).must_equal(expected_relationships_dsl)
   end
+
+  it "escapes square brackets from instance methods and singleton methods" do
+    # Setup
+    input = <<~MSG.chomp
+      class LinkedList
+        def []; end
+        def self.[]; end
+      end
+
+      module Math
+        def []; end
+        def self.[]; end
+      end
+    MSG
+    uml_info = UMLInfoGenerator.process_code(input)
+
+    # Execute
+    dsl = NomnomlDSLGenerator.generate_dsl(uml_info)
+
+    # Assert
+    expected_class_dsl = '[<class> LinkedList |
+   |
+  +\[\] |
+  self.\[\]
+]
+'
+    _(dsl.classes).must_equal(expected_class_dsl)
+
+    expected_module_dsl = '[<module> Math |
+  +\[\] |
+  self.\[\]
+]
+'
+    _(dsl.modules).must_equal(expected_module_dsl)
+  end
 end
