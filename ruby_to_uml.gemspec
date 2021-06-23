@@ -2,7 +2,7 @@ $LOAD_PATH << File.expand_path('lib', __dir__)
 
 Gem::Specification.new do |spec|
   spec.name     = 'ruby_to_uml'
-  spec.version  = '1.0.0'
+  spec.version  = '3.0.0'
 
   spec.summary  = 'ruby_to_uml is a tool that creates UML class diagrams from Ruby code.'
   spec.homepage = 'https://github.com/iulspop/ruby_to_uml'
