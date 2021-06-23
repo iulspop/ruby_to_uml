@@ -46,6 +46,6 @@ Built completely anew to overcome limitations of yUML. Now uses parser and nomno
 
 </details>
 
-[3.0.0]: https://github.com/iulspop/ruby_to_uml/compare/
+[3.0.0]: https://github.com/iulspop/ruby_to_uml/compare/720a2df807b02ac1852ede12baab44104b956828...v3.0.0
 [2.0.0]: https://github.com/iulspop/ruby_to_uml_old/compare/a9022cb84fbefa54eb2e659ed2f1dd314113b8be...v2.0.0
 [1.2.6]: https://github.com/iulspop/ruby_to_uml_old/commit/a9022cb84fbefa54eb2e659ed2f1dd314113b8be
