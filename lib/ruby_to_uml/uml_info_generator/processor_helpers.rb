@@ -2,55 +2,39 @@ module RubyToUML
   module UMLInfoGenerator
     module ProcessorHelpers
       private
-
-      def get_class_name(node)
-        constant, inherit, children = *node
-        get_constant_name(constant)
-      end
-
-      def get_class_body(node)
-        body_node_index = 2
-        node.children[body_node_index]
-      end
-
-      def get_superclass_name(node)
-        constant, inherit, children = *node
-        inherit ? get_constant_name(inherit) : nil
-      end
-
-      def get_instance_methods_closure
+      def instance_methods_closure
         type = :public
         lambda do |node, instance_methods_info|
           case node.type
           when :def
-            method_name = get_method_name(node)
-            args        = get_instance_method_args(node)
+            method_name = NodeFinder.method_name(node)
+            args        = NodeFinder.instance_method_args(node)
             instance_methods_info << InstanceMethodInfo.new(method_name, type, args)
           when :send
-            method_name = get_send_method(node)
-            new_type    = get_method_type_change(method_name)
+            method_name = NodeFinder.send_method(node)
+            new_type    = NodeFinder.method_type_change(method_name)
             type = new_type if new_type
           end
         end
       end
 
-      def get_singleton_methods_closure
+      def singleton_methods_closure
         lambda do |node, singleton_methods_info|
           if node.type == :defs
-            method_name = get_singleton_method_name(node)
-            args        = get_singleton_method_args(node)
+            method_name = NodeFinder.singleton_method_name(node)
+            args        = NodeFinder.singleton_method_args(node)
             singleton_methods_info << SingletonMethodInfo.new(method_name, args)
           end
         end
       end
 
-      def get_instance_variables_closure
+      def instance_variables_closure
         lambda do |node, instance_variables_info|
-          if node.type == :def && get_method_name(node) == :initialize
-            method_body_node = BodyNodeWrapper.new(get_method_body_node(node))
+          if node.type == :def && NodeFinder.method_name(node) == :initialize
+            method_body_node = BodyNodeWrapper.new(NodeFinder.method_body_node(node))
             closure = lambda do |node|
               if node.type == :ivar || node.type == :ivasgn
-                variable_name = get_instance_variable_name(node)
+                variable_name = NodeFinder.instance_variable_name(node)
                 instance_variables_info << variable_name
               end
             end
@@ -76,79 +60,98 @@ module RubyToUML
       end
 
       def add_module_relationship(class_name, arguments, type)
-        module_name = get_constant_name(arguments)
+        module_name = NodeFinder.constant_name(arguments)
         relationships << RelationshipInfo.new(class_name, module_name, type)
       end
+    end
 
-      def get_constant_name(const_node)
-        constant_name_index = 1
-        const_node.children[constant_name_index]
-      end
+    class NodeFinder
+      class << self
+        def class_name(node)
+          constant, inherit, children = *node
+          NodeFinder.constant_name(constant)
+        end
 
-      def get_method_name(def_node)
-        name_index = 0
-        def_node.children[name_index]
-      end
+        def class_body(node)
+          body_node_index = 2
+          node.children[body_node_index]
+        end
 
-      def get_instance_method_args(def_node)
-        args_index = 1
-        get_arguments(def_node.children[args_index])
-      end
+        def superclass_name(node)
+          constant, inherit, children = *node
+          inherit ? NodeFinder.constant_name(inherit) : nil
+        end
 
-      def get_send_method(send_node)
-        caller, method, arguments = *send_node
-        method
-      end
+        def constant_name(const_node)
+          constant_name_index = 1
+          const_node.children[constant_name_index]
+        end
 
-      def get_method_type_change(method_name)
-        %i[public private protected].include?(method_name) ? method_name : nil
-      end
+        def method_name(def_node)
+          name_index = 0
+          def_node.children[name_index]
+        end
 
-      def get_singleton_method_name(defs_node)
-        name_index = 1
-        defs_node.children[name_index]
-      end
+        def instance_method_args(def_node)
+          args_index = 1
+          NodeFinder.arguments(def_node.children[args_index])
+        end
 
-      def get_singleton_method_args(defs_node)
-        args_index = 2
-        get_arguments(defs_node.children[args_index])
-      end
+        def send_method(send_node)
+          caller, method, arguments = *send_node
+          method
+        end
 
-      def get_arguments(node)
-        return [] if node.children.nil?
+        def method_type_change(method_name)
+          %i[public private protected].include?(method_name) ? method_name : nil
+        end
 
-        node.children.each_with_object([]) { |node, args| args << node.children[0] }
-      end
+        def singleton_method_name(defs_node)
+          name_index = 1
+          defs_node.children[name_index]
+        end
 
-      def get_method_body_node(def_node)
-        body_index = 2
-        def_node.children[body_index]
-      end
+        def singleton_method_args(defs_node)
+          args_index = 2
+          NodeFinder.arguments(defs_node.children[args_index])
+        end
 
-      def get_instance_variable_name(node)
-        name_index = 0
-        node.children[name_index]
-      end
+        def arguments(node)
+          return [] if node.children.nil?
 
-      def get_module_name(node)
-        constant, = *node
-        get_constant_name(constant)
-      end
+          node.children.each_with_object([]) { |node, args| args << node.children[0] }
+        end
 
-      def get_module_body(node)
-        _, body = *node
-        body
+        def method_body_node(def_node)
+          body_index = 2
+          def_node.children[body_index]
+        end
+
+        def instance_variable_name(node)
+          name_index = 0
+          node.children[name_index]
+        end
+
+        def module_name(node)
+          constant, = *node
+          NodeFinder.constant_name(constant)
+        end
+
+        def module_body(node)
+          _, body = *node
+          body
+        end
       end
     end
 
     module ClassAndRelationshipsProcessor
       def on_class(node)
-        class_name              = get_class_name(node)
-        superclass_name         = get_superclass_name(node)
-        class_body_node         = BodyNodeWrapper.new(get_class_body(node))
-        instance_methods_info   = class_body_node.array_operation(&get_instance_methods_closure)
-        singleton_methods_info  = class_body_node.array_operation(&get_singleton_methods_closure)
-        instance_variables_info = class_body_node.array_operation(&get_instance_variables_closure)
+        class_name              = NodeFinder.class_name(node)
+        superclass_name         = NodeFinder.superclass_name(node)
+        class_body_node         = BodyNodeWrapper.new(NodeFinder.class_body(node))
+        instance_methods_info   = class_body_node.array_operation(&instance_methods_closure)
+        singleton_methods_info  = class_body_node.array_operation(&singleton_methods_closure)
+        instance_variables_info = class_body_node.array_operation(&instance_variables_closure)
 
         add_inheritence_relationship(class_name, superclass_name) if superclass_name
         class_body_node.simple_operation(&add_module_relationships_if_exist_closure(class_name))
@@ -167,10 +170,10 @@ module RubyToUML
 
     module ModuleProcesor
       def on_module(node)
-        module_name            = get_module_name(node)
-        module_body_node       = BodyNodeWrapper.new(get_module_body(node))
-        instance_methods_info  = module_body_node.array_operation(&get_instance_methods_closure)
-        singleton_methods_info = module_body_node.array_operation(&get_singleton_methods_closure)
+        module_name            = NodeFinder.module_name(node)
+        module_body_node       = BodyNodeWrapper.new(NodeFinder.module_body(node))
+        instance_methods_info  = module_body_node.array_operation(&instance_methods_closure)
+        singleton_methods_info = module_body_node.array_operation(&singleton_methods_closure)
 
         add_module(module_name, instance_methods_info, singleton_methods_info)
 
